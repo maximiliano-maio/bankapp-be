@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import org.springframework.data.annotation.Persistent;
+
 import lombok.Data;
 
 @Data
@@ -16,8 +18,9 @@ public class ContactInfo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Persistent
 	@OneToOne(mappedBy="contactInfo")
-	private Client client;
+	private Client clientId;
 	private String telephone;
 	private String cellphone;
 	private String email;

@@ -33,8 +33,8 @@ public class ContactInfoToContactInfoCommand implements Converter<ContactInfo, C
     contactInfoCommand.setCellphone(source.getCellphone());
     contactInfoCommand.setCity(source.getCity());
 
-    if (source.getClient() != null) {
-      contactInfoCommand.setClient(clientCommandConverter.convert(source.getClient()));
+    if (source.getClientId() != null) {
+      contactInfoCommand.setClientId(clientCommandConverter.convert(source.getClientId()));
     }
 
     contactInfoCommand.setDistribution(source.getDistributionAgreement());

@@ -31,8 +31,8 @@ public class ContactInfoCommandToContactInfo implements Converter<ContactInfoCom
     contactInfo.setCellphone(source.getCellphone());
     contactInfo.setCity(source.getCity());
 
-    if (source.getClient() != null) {
-      contactInfo.setClient(clientConverter.convert(source.getClient()));
+    if (source.getClientId() != null) {
+      contactInfo.setClientId(clientConverter.convert(source.getClientId()));
     }
     
     contactInfo.setDistributionAgreement(source.getDistribution());

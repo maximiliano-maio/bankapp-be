@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,8 @@ public class ClientServiceImpl implements ClientService {
     private final ClientCommandToClient clientCommandToClient;
     private final ContactInfoCommandToContactInfo contactInfoCommandToContactInfo;
     private final ContactInfoToContactInfoCommand contactInfoToContactInfoCommand;
-
+    private Set<Client> clientSet;
+    private Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
     public ClientServiceImpl(
         ClientRepository clientRepository,
         ContactInfoRepository contactInfoRepository,
@@ -46,14 +49,14 @@ public class ClientServiceImpl implements ClientService {
         this.contactInfoToContactInfoCommand = contactInfoToContactInfoCommand;
     }
 
-    private Set<Client> clientSet;
+    
 
     @Override
     @Transactional
     public ClientCommand setClient(ClientCommand clientCommand) {
         Client client = clientCommandToClient.convert(clientCommand);
         Client savedClient = clientRepository.save(client);
-        log.debug("Saved Client id: " + savedClient.getClientId());
+        this.logger.info("Saved Client id: " + savedClient.getClientId());
         return clientToClientCommand.convert(savedClient);
     }
 

@@ -22,10 +22,10 @@ public class Client {
 	private Long id;
 	@OneToMany(targetEntity= CheckBook.class, mappedBy="client", cascade=CascadeType.ALL)
 	private Set<CheckBook> checkBookSet;
-	private int clientId;
+	private String clientId;
 	private String firstName;
 	private String lastName;
-	private int maritalStatus;
+	private String maritalStatus;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "contact_info", referencedColumnName="id")

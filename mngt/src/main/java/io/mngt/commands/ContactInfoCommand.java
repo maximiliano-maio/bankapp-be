@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ContactInfoCommand {
   private Long id;
-  private ClientCommand client;
+  private ClientCommand clientId;
   private String telephone;
   private String cellphone;
   private String email;

@@ -25,10 +25,10 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   private void initData() {
 
     Client client = new Client();
-    client.setClientId(100);
+    client.setClientId("100");
     client.setFirstName("Maxi");
     client.setLastName("Maio");
-    client.setMaritalStatus(1);
+    client.setMaritalStatus("1");
 
     ContactInfo clientContactInfo = new ContactInfo();
     clientContactInfo.setCellphone("0515819763");

@@ -11,9 +11,9 @@ import io.mngt.services.ClientService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@CrossOrigin(origins="http://localhost:4200/", maxAge=60)
+@CrossOrigin("*")
 @RestController
-@RequestMapping({"/register"})
+@RequestMapping({"/registerclient"})
 public class ClientController {
 
     @Autowired
@@ -21,9 +21,9 @@ public class ClientController {
 
     @PostMapping
     public ClientCommand create(
-        @RequestBody ClientCommand client, 
-        @RequestBody ContactInfoCommand contactInfo) {
-        clientService.setContactInformation(contactInfo);
+        @RequestBody ClientCommand client) {
+            // @RequestBody ContactInfoCommand contactInfo
+            // clientService.setContactInformation(contactInfo);
         return clientService.setClient(client);
     }
     
