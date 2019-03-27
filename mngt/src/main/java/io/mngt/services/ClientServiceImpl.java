@@ -18,6 +18,7 @@ import io.mngt.converters.ContactInfoCommandToContactInfo;
 import io.mngt.converters.ContactInfoToContactInfoCommand;
 import io.mngt.domain.Client;
 import io.mngt.domain.ContactInfo;
+import io.mngt.exceptions.NotFoundException;
 import io.mngt.repositories.ClientRepository;
 import io.mngt.repositories.ContactInfoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,8 @@ public class ClientServiceImpl implements ClientService {
     public boolean deleteClient(Long id) {
         Optional<Client> user = clientRepository.findById(id);
         if (!user.isPresent())
-            return false;
+            throw new NotFoundException("Client not found");
+            
         clientRepository.delete(user.get());
         return true;
     }
