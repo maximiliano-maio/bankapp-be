@@ -1,10 +1,14 @@
 package io.mngt.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import org.springframework.data.annotation.Persistent;
 
@@ -20,6 +24,7 @@ public class ContactInfo {
 	
 	@Persistent
 	@OneToOne(mappedBy="contactInfo")
+	@JsonManagedReference
 	private Client clientId;
 	private String telephone;
 	private String cellphone;

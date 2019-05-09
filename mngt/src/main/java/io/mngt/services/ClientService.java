@@ -1,16 +1,12 @@
 package io.mngt.services;
 
-import java.util.Set;
-
-import io.mngt.commands.ClientCommand;
-import io.mngt.commands.ContactInfoCommand;
 import io.mngt.domain.Client;
-
+import io.mngt.domain.ContactInfo;
 
 public interface ClientService {
-    ClientCommand setClient(ClientCommand clientCommand);
-    ContactInfoCommand setContactInformation(ContactInfoCommand contactInfo);
+    Client setClient(Client client);
+    ContactInfo setContactInformation(ContactInfo contactInfo);
     boolean deleteClient(Long id);
     Client findClient(Long id);
-    Set<Client> findAll();
+    Iterable<Client> findAll();
 }

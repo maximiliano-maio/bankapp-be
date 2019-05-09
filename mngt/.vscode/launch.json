@@ -2,10 +2,20 @@
     "configurations": [
         {
             "type": "java",
-            "name": "CodeLens (Launch) - DemoApplication",
+            "name": "CodeLens (Launch) - BankMngtApplication",
             "request": "launch",
-            "mainClass": "io.mngt.DemoApplication",
+            "mainClass": "io.mngt.BankMngtApplication",
             "projectName": "mngt"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-BankMngtApplication<mngt>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "io.mngt.BankMngtApplication",
+            "projectName": "mngt",
+            "args": ""
         }
     ]
 }

@@ -2,29 +2,33 @@ package io.mngt.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.mngt.commands.ClientCommand;
-import io.mngt.commands.ContactInfoCommand;
+import io.mngt.domain.Client;
 import io.mngt.services.ClientService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping({"/registerclient"})
+
 public class ClientController {
 
     @Autowired
     private ClientService clientService;
 
     @PostMapping
-    public ClientCommand create(
-        @RequestBody ClientCommand client) {
-            // @RequestBody ContactInfoCommand contactInfo
-            // clientService.setContactInformation(contactInfo);
+    @RequestMapping({ "/registerclient" })    
+    public Client create(@RequestBody Client client) {
         return clientService.setClient(client);
+    }
+
+    @GetMapping
+    @RequestMapping("/getClients")
+    public Iterable<Client> getClients() {
+        return clientService.findAll();
     }
     
     
