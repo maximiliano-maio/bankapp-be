@@ -28,9 +28,25 @@ public class UserBootstrap implements ApplicationListener<ContextRefreshedEvent>
   }
 
   private void setLoginUser() {
+    
     credentialRepository.deleteAll();
-    Credential credential = new Credential("maxi", "maio", "test@test.com", "admin", 90);
+    
+    // User 1:
+    Credential credential = new Credential("maxi", "maio", "maxi_maio@hotmail.com", "admin", 90);
     credentialRepository.save(credential);
+
+    // User 2:
+    credential = new Credential("test", "test", "test@test.com", "test", 30);
+    credentialRepository.save(credential);
+
+    // User 3:
+    credential = new Credential("sahar", "moshe", "sahar@test.com", "employee", 30);
+    credentialRepository.save(credential);
+
+    // User 4:
+    credential = new Credential("oded", "klein", "ing.m.maio@gmail.com", "manager", 90);
+    credentialRepository.save(credential);
+
   }
 
   

@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
 
@@ -22,8 +23,9 @@ public class Client {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@OneToMany(targetEntity= CheckBook.class, mappedBy="client")
-	private Set<CheckBook> checkBookSet;
+	@OneToMany(targetEntity= CheckBookOrder.class, mappedBy="client")
+	@JsonManagedReference
+	private Set<CheckBookOrder> checkBookSet;
 	private String clientId;
 	private String firstName;
 	private String lastName;
@@ -34,6 +36,11 @@ public class Client {
 	@JoinColumn(name = "contact_info", referencedColumnName="id")
 	@JsonBackReference
 	private ContactInfo contactInfo;
+
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "client")
+	@JoinColumn(name = "loan", referencedColumnName = "id")
+	@JsonBackReference
+	private Loan loan;
 
 	public Client(String clientId, String firstname, String lastname, String maritalStatus) {
 		this.clientId = clientId;

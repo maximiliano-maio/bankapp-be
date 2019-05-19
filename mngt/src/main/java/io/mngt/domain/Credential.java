@@ -1,23 +1,26 @@
 package io.mngt.domain;
 
-import java.math.BigInteger;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import lombok.Data;
 
 @Data
-@Document
+@Entity
 public class Credential {
 
   @Id
-  private BigInteger id;
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
   private String username;
   private String password;
   private String mail;
   private String role;
   private Integer validity;
+  private int hashcode;
 
   public Credential(String username, String password, String mail, String role, Integer validity) {
     this.username = username;

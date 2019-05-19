@@ -2,10 +2,10 @@ package io.mngt.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 
-import io.mngt.domain.CheckBook;
+import io.mngt.domain.CheckBookOrder;
 
 
-public interface CheckBookOrderRepository extends CrudRepository<CheckBook, Long> {
+public interface CheckBookOrderRepository extends CrudRepository<CheckBookOrder, Long> {
 
     
     

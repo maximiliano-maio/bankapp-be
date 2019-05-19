@@ -1,10 +1,10 @@
 package io.mngt.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
 
 import io.mngt.domain.Credential;
 
-public interface CredentialRepository extends MongoRepository<Credential, Integer> {
+public interface CredentialRepository extends CrudRepository<Credential, Long> {
   Credential findByUsername(String username);
   Credential findByPassword(String password);
   
