@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mngt.domain.Client;
@@ -28,6 +29,12 @@ public class ClientController {
     @RequestMapping("/getClients")
     public Iterable<Client> getClients() {
         return clientService.findAll();
+    }
+
+    @GetMapping
+    @RequestMapping("/user")
+    public Client getLocalAccountBalance(@RequestParam(name = "code") Long id) {
+        return clientService.findClient(id);
     }
     
     

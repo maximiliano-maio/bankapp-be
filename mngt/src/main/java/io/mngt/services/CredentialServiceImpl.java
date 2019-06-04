@@ -2,6 +2,7 @@ package io.mngt.services;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,22 +24,34 @@ public class CredentialServiceImpl implements CredentialService {
 
   @Override
   public Credential login(String username, String password) {
-    log.info("username: " + username);
+    
     credentialFromDB = credentialRepository.findByUsername(username);
     if (credentialFromDB == null) return null;
 
-    if (username.equals(credentialFromDB.getUsername()) && password.equals(credentialFromDB.getPassword())) {
+    // If Credential exists, so..
+    if (password.equals(credentialFromDB.getPassword())) {
+      
       log.info("Credentials are correct");
+      
       // Generate HashCode from username, password and date:
       this.date = new Date(System.currentTimeMillis());
       String hashcode =  new String();
       hashcode = credentialFromDB.getUsername() + credentialFromDB.getPassword() + this.formatter.format(date);
-      credentialFromDB.setHashcode(hashcode.hashCode());
+      credentialFromDB.setHashcode( hashcode.hashCode());
+      
+      // Declare user has logged in
+      credentialFromDB.setStatus(1);
+      
       credentialRepository.save(credentialFromDB);
-      // Do not send back user's password:
-      credentialFromDB.setPassword(null);
+      
+      // Sending back only relevant fields:
+      Credential returnedCredential = new Credential();
+      returnedCredential.setUsername(credentialFromDB.getUsername());
+      returnedCredential.setRole(credentialFromDB.getRole());
+      returnedCredential.setStatus(credentialFromDB.getStatus());
+      returnedCredential.setHashcode(credentialFromDB.getHashcode());
 
-      return credentialFromDB;
+      return returnedCredential;
       
     } else {
       log.info("Username and Password are not correct");
@@ -50,6 +63,17 @@ public class CredentialServiceImpl implements CredentialService {
   @Override
   public Iterable<Credential> findAll() {
     return credentialRepository.findAll();
+  }
+
+  @Override
+  public int isAuthenticated(int hashcode) {
+    
+    Credential c = credentialRepository.findByHashcode(hashcode);
+    if (c == null) return 0;
+
+    return c.getStatus();
+    
+
   }
 
   

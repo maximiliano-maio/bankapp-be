@@ -23,14 +23,18 @@ public class Client {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@OneToMany(targetEntity= CheckBookOrder.class, mappedBy="client")
-	@JsonManagedReference
-	private Set<CheckBookOrder> checkBookSet;
+	
 	private String clientId;
 	private String firstName;
 	private String lastName;
 	private String maritalStatus;
 	
+	@OneToMany(targetEntity = CheckBookOrder.class, mappedBy = "client")
+	@JsonManagedReference
+	private Set<CheckBookOrder> checkBookSet;
+
+	@OneToMany(mappedBy = "client")
+	private Set<BalanceILS> balance;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "contact_info", referencedColumnName="id")
@@ -42,6 +46,12 @@ public class Client {
 	@JsonBackReference
 	private Loan loan;
 
+	@OneToOne(cascade = CascadeType.ALL)
+	@JsonBackReference
+	private Credential credential;
+
+	
+
 	public Client(String clientId, String firstname, String lastname, String maritalStatus) {
 		this.clientId = clientId;
 		this.firstName = firstname;
@@ -50,6 +60,10 @@ public class Client {
 	}
 
 	public Client() {}
+
+	public Set<BalanceILS> getLocalAccountBalanceILS() {
+		return balance;
+	}
 
 	
 }

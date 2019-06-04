@@ -52,5 +52,15 @@ public class ClientServiceImpl implements ClientService {
     public ContactInfo setContactInformation(ContactInfo contactInfo) {
         return contactInfoRepository.save(contactInfo);
     }
+
+    @Override
+    public Client getClient(Long id) {
+        Client client = new Client();
+        Optional<Client> optionalClient = clientRepository.findById(id);
+        
+        if (!optionalClient.isPresent()) return null;
+        
+        return client;
+    }
     
 }

@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
 
@@ -21,6 +24,11 @@ public class Credential {
   private String role;
   private Integer validity;
   private int hashcode;
+  private int status;
+
+  @OneToOne(mappedBy = "credential")
+  @JsonManagedReference
+  private Client client;
 
   public Credential(String username, String password, String mail, String role, Integer validity) {
     this.username = username;
@@ -28,9 +36,14 @@ public class Credential {
     this.mail = mail;
     this.role = role;
     this.validity = validity;
+    this.status = 0;
     
   }
 
   public Credential() { }
+
+  public Client getClient() {
+    return client;
+  }
 
 }
