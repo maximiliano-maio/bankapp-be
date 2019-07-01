@@ -6,5 +6,6 @@ import io.mngt.domain.Client;
 
 public interface ClientRepository extends CrudRepository<Client, Long> {
   Client findByClientId (String clientId);
+
     
 }

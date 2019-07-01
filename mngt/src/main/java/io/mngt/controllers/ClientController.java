@@ -5,19 +5,28 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mngt.domain.Client;
+import io.mngt.domain.Credential;
 import io.mngt.services.ClientService;
+import io.mngt.services.CredentialService;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+@Slf4j
 @CrossOrigin("*")
 @RestController
 public class ClientController {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private CredentialService credentialService;
 
     @PostMapping
     @RequestMapping({ "/registerclient" })    
@@ -33,8 +42,9 @@ public class ClientController {
 
     @GetMapping
     @RequestMapping("/user")
-    public Client getLocalAccountBalance(@RequestParam(name = "code") Long id) {
-        return clientService.findClient(id);
+    public @ResponseBody Client getLocalAccountBalance(@RequestParam(name = "code") String hashcode) {
+        Credential credential = credentialService.getCredential(Integer.parseInt(hashcode));
+        return credential.getClient();
     }
     
     

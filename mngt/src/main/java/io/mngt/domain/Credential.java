@@ -1,12 +1,17 @@
 package io.mngt.domain;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -26,8 +31,9 @@ public class Credential {
   private int hashcode;
   private int status;
 
-  @OneToOne(mappedBy = "credential")
-  @JsonManagedReference
+  @JsonBackReference(value = "1")
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "client_id")
   private Client client;
 
   public Credential(String username, String password, String mail, String role, Integer validity) {
@@ -42,8 +48,10 @@ public class Credential {
 
   public Credential() { }
 
+  @JsonIgnore
   public Client getClient() {
     return client;
   }
+
 
 }

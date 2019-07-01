@@ -14,10 +14,12 @@ import io.mngt.domain.BalanceILS;
 import io.mngt.domain.CheckBookOrder;
 import io.mngt.domain.Client;
 import io.mngt.domain.ContactInfo;
+import io.mngt.domain.Credential;
 import io.mngt.domain.Loan;
 import io.mngt.repositories.BalanceILSRepository;
 import io.mngt.repositories.CheckBookOrderRepository;
 import io.mngt.repositories.ClientRepository;
+import io.mngt.repositories.CredentialRepository;
 import io.mngt.repositories.LoanRepository;
 
 @Component
@@ -32,6 +34,8 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   private LoanRepository loanRepository;
   @Autowired
   private BalanceILSRepository balanceILSRepository;
+  @Autowired
+  private CredentialRepository credentialRepository;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -43,9 +47,18 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
 
     clientRepository.deleteAll();
     checkBookOrderRepository.deleteAll();
+    credentialRepository.deleteAll();
+    balanceILSRepository.deleteAll();
+    loanRepository.deleteAll();
+    checkBookOrderRepository.deleteAll();
+
 
     // Client 1:
     Client client = new Client("338011321", "Maxi", "Maio", "1");
+
+    Credential credential = new Credential("maxi", "maio", "maxi_maio@hotmail.com", "admin", 90);
+    credential.setClient(client);
+    credentialRepository.save(credential);
 
     ContactInfo clientContactInfo = new ContactInfo();
     clientContactInfo.setCellphone("0515819763");
@@ -53,6 +66,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     clientContactInfo.setDistributionAgreement(2);
 
     client.setContactInfo(clientContactInfo);
+    // client.setCredential(credential);
     clientRepository.save(client);
 
     CheckBookOrder checks = new CheckBookOrder(100, "Ordered", "A", 0, 50, 50, "ILS");
@@ -939,6 +953,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
 
     checks = new CheckBookOrder(107, "Rejected", "A", 1020, 1070, 50, "ILS");
     checks.setClient(client);
+    
     checkBookOrderRepository.save(checks);
 
     // **** Generate accounting data ****
@@ -1056,6 +1071,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
 
     checks = new CheckBookOrder();
     checks.setClient(client);
+    
     checkBookOrderRepository.save(checks);
     // **** Generate accounting data ****
     balance = new BalanceILS();
@@ -1171,6 +1187,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
 
     checks = new CheckBookOrder();
     checks.setClient(client);
+    
     checkBookOrderRepository.save(checks);
 
     // **** Generate accounting data ****
@@ -1287,6 +1304,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
 
     checks = new CheckBookOrder(120, "Delivered", "B", 0, 0, 0, "");
     checks.setClient(client);
+    
     checkBookOrderRepository.save(checks);
 
     // **** Generate accounting data ****

@@ -1,25 +1,32 @@
 package io.mngt.domain;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class Client {
+public class Client implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -28,27 +35,34 @@ public class Client {
 	private String firstName;
 	private String lastName;
 	private String maritalStatus;
-	
-	@OneToMany(targetEntity = CheckBookOrder.class, mappedBy = "client")
-	@JsonManagedReference
-	private Set<CheckBookOrder> checkBookSet;
 
-	@OneToMany(mappedBy = "client")
-	private Set<BalanceILS> balance;
+	@JsonManagedReference(value = "4")
+	@OneToMany( 
+		mappedBy = "client", 
+		fetch = FetchType.LAZY)
+	private List<BalanceILS> balance = new ArrayList<>();
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "contact_info", referencedColumnName="id")
-	@JsonBackReference
+	@JsonManagedReference
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ContactInfo contactInfo;
 
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "client")
-	@JoinColumn(name = "loan", referencedColumnName = "id")
-	@JsonBackReference
-	private Loan loan;
+	@JsonManagedReference(value = "2")
+	@OneToMany(
+		mappedBy = "client", 
+		fetch = FetchType.LAZY)
+	private List<Loan> loan = new ArrayList<>();
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JsonBackReference
+	@JsonManagedReference(value = "1")
+	@OneToOne(
+		mappedBy = "client",
+		fetch = FetchType.LAZY, 
+		cascade = CascadeType.ALL,
+		optional = false)
 	private Credential credential;
+
+	@JsonBackReference(value = "3")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
+	private Set<CheckBookOrder> checkBookOrder = new HashSet<>();
 
 	
 
@@ -61,9 +75,7 @@ public class Client {
 
 	public Client() {}
 
-	public Set<BalanceILS> getLocalAccountBalanceILS() {
-		return balance;
-	}
+	
 
 	
 }

@@ -26,15 +26,20 @@ public class CredentialController {
   @PostMapping
   @RequestMapping("/login/user")
   public @ResponseBody Credential validateUser(@RequestBody Credential c) {
-    Credential credential = credentialService.login(c.getUsername(), c.getPassword());
-    return credential;
+    return credentialService.login(c.getUsername(), c.getPassword());
   }
 
   @GetMapping("/auth/authState")
   public @ResponseBody int authenticateUser(@RequestParam(name = "code") String hashcode){
+    
     return credentialService.isAuthenticated(Integer.parseInt(hashcode));
   }
 
+  @GetMapping("/logout")
+  public @ResponseBody boolean logout(@RequestParam(name = "code") String hashcode) {
+
+    return credentialService.logout(Integer.parseInt(hashcode));
+  }
   @GetMapping(path = "/all")
   public @ResponseBody Iterable<Credential> getAllUsers() {
     return credentialService.findAll();

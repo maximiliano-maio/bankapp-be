@@ -1,12 +1,16 @@
 package io.mngt.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.data.annotation.Persistent;
 
@@ -21,9 +25,13 @@ public class ContactInfo {
 	private Long id;
 	
 	@Persistent
-	@OneToOne(mappedBy="contactInfo")
-	@JsonManagedReference
+	@JsonBackReference
+	@OneToOne(
+		mappedBy="contactInfo", 
+		fetch = FetchType.LAZY,
+		optional = false)
 	private Client clientId;
+	
 	private String telephone;
 	private String cellphone;
 	private String email;

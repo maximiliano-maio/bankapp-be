@@ -1,10 +1,10 @@
 package io.mngt.services;
 
-import java.util.Set;
+import java.util.List;
 
 import io.mngt.domain.BalanceILS;
 
 public interface AccountingService {
-  Set<BalanceILS> getLocalAccountBalance(Integer id);
+  List<BalanceILS> getLocalAccountBalance(int id);
   
 }

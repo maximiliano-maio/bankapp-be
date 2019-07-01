@@ -2,13 +2,12 @@ package io.mngt.services;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.mngt.dao.CredentialDao;
 import io.mngt.domain.Credential;
-import io.mngt.repositories.CredentialRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,12 +19,11 @@ public class CredentialServiceImpl implements CredentialService {
   Date date;
 
   @Autowired
-  private CredentialRepository credentialRepository;
+  private CredentialDao credentialDao;
 
   @Override
   public Credential login(String username, String password) {
-    
-    credentialFromDB = credentialRepository.findByUsername(username);
+    credentialFromDB = credentialDao.findByUsername(username);
     if (credentialFromDB == null) return null;
 
     // If Credential exists, so..
@@ -42,7 +40,7 @@ public class CredentialServiceImpl implements CredentialService {
       // Declare user has logged in
       credentialFromDB.setStatus(1);
       
-      credentialRepository.save(credentialFromDB);
+      credentialDao.save(credentialFromDB);
       
       // Sending back only relevant fields:
       Credential returnedCredential = new Credential();
@@ -62,19 +60,36 @@ public class CredentialServiceImpl implements CredentialService {
 
   @Override
   public Iterable<Credential> findAll() {
-    return credentialRepository.findAll();
+    return credentialDao.findAll();
   }
 
   @Override
   public int isAuthenticated(int hashcode) {
-    
-    Credential c = credentialRepository.findByHashcode(hashcode);
+    Credential c = getCredentialFromHashcode(hashcode);
     if (c == null) return 0;
-
     return c.getStatus();
-    
-
   }
 
+  @Override
+  public Credential getCredential(int hashcode) {
+    return getCredentialFromHashcode(hashcode);
+  }
+
+  @Override
+  public Boolean logout(int hashcode) {
+    Credential c = getCredentialFromHashcode(hashcode);
+    if (c == null) return false;
+    
+    c.setHashcode(0);
+    return true;
+    
+  }
+
+  public Credential getCredentialFromHashcode(int hashcode) {
+    Credential c = credentialDao.findByHashcode(hashcode);
+    if (c == null) return null;
+    
+    return c;
+  }
   
 }
