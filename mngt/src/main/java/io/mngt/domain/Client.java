@@ -16,7 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -36,12 +35,18 @@ public class Client implements Serializable {
 	private String lastName;
 	private String maritalStatus;
 
-	@JsonManagedReference(value = "4")
+	@JsonManagedReference(value = "client_balanceils")
 	@OneToMany( 
 		mappedBy = "client", 
 		fetch = FetchType.LAZY)
 	private List<BalanceILS> balance = new ArrayList<>();
 	
+	@JsonManagedReference(value = "client_bankaccount")
+	@OneToMany(
+		mappedBy = "client",
+		fetch = FetchType.LAZY)
+	private Set<BankAccount> bankAccount = new HashSet<>();
+
 	@JsonManagedReference
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ContactInfo contactInfo;
@@ -52,7 +57,7 @@ public class Client implements Serializable {
 		fetch = FetchType.LAZY)
 	private List<Loan> loan = new ArrayList<>();
 
-	@JsonManagedReference(value = "1")
+	@JsonManagedReference(value = "client_credential")
 	@OneToOne(
 		mappedBy = "client",
 		fetch = FetchType.LAZY, 
@@ -60,7 +65,7 @@ public class Client implements Serializable {
 		optional = false)
 	private Credential credential;
 
-	@JsonBackReference(value = "3")
+	@JsonBackReference(value = "client_checkbookorder")
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
 	private Set<CheckBookOrder> checkBookOrder = new HashSet<>();
 

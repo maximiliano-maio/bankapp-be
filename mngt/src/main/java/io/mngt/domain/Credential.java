@@ -31,7 +31,7 @@ public class Credential {
   private int hashcode;
   private int status;
 
-  @JsonBackReference(value = "1")
+  @JsonBackReference(value = "client_credential")
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "client_id")
   private Client client;

@@ -28,7 +28,7 @@ public class CheckBookOrder {
     private int checkAmount;
     private String currency;
 
-    @JsonBackReference(value = "3")
+    @JsonBackReference(value = "client_checkbookorder")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Client client;
