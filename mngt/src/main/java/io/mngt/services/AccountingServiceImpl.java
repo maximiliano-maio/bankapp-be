@@ -10,28 +10,24 @@ import org.springframework.transaction.annotation.Transactional;
 import io.mngt.dao.BalanceDao;
 import io.mngt.dao.BalanceDaoImpl;
 import io.mngt.dao.BankAccountDao;
-import io.mngt.dao.ClientDao;
-import io.mngt.dao.ClientDaoImpl;
+import io.mngt.dao.BankAccountDaoImpl;
+import io.mngt.dao.TransactionDao;
+import io.mngt.dao.TransactionDaoImpl;
 import io.mngt.domain.BalanceILS;
 import io.mngt.domain.BankAccount;
 import io.mngt.domain.Client;
 import io.mngt.domain.Credential;
+import io.mngt.domain.Transaction;
 import io.mngt.domain.Transfer;
 import io.mngt.domain.business.TransferLogic;
-import io.mngt.repositories.BankAccountRepository;
-import io.mngt.repositories.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-
 @Service
 public class AccountingServiceImpl implements AccountingService {
 
   @Autowired
   private CredentialService credentialService;
-
-  @Autowired
-  private ClientRepository clientRepository;
   @Autowired
   private BalanceDaoImpl balanceDaoImpl;
   @Autowired
@@ -39,100 +35,146 @@ public class AccountingServiceImpl implements AccountingService {
   @Autowired
   private BankAccountDao bankAccountDao;
   @Autowired
-  private BankAccountRepository bankAccountRepository;
+  private BankAccountDaoImpl bankAccountDaoImpl;
   @Autowired
-  private ClientDaoImpl clientDaoImpl;
+  private TransactionDao transactionDao;
+  @Autowired
+  private TransactionDaoImpl transactionDaoImpl;
 
 
   @Transactional(readOnly = true)
   @Override
-  public List<BalanceILS> getLocalAccountBalance(int hashcode) {
-    Client c = getClientUsingHashcode(hashcode);
-    if (c == null)
-      return null;
+  public List<BalanceILS> findBalanceIlsListByHashcode(int hashcode) {
+    Client c = findClientByHashcode(hashcode);
+    if (c == null) return null;
 
     return c.getBalance();
-
   }
 
   @Transactional(readOnly = true)
-  public List<BalanceILS> findLast5(int hashcode) {
-    Client c = getClientUsingHashcode(hashcode);
-    if (c == null)
-      return null;
+  public List<BalanceILS> findLast5BalanceIlsListByHashcode(int hashcode) {
+    Client c = findClientByHashcode(hashcode);
+    if (c == null) return null;
 
     return balanceDaoImpl.findLastBalancesByClient(c, 5);
   }
 
   @Transactional(readOnly = true)
-  private Client getClientUsingHashcode(int hashcode) {
-    Credential credential = credentialService.getCredential(hashcode);
-    if (credential == null)
-      return null;
+  @Override
+  public Client findClientByHashcode(int hashcode) {
+    Credential credential = credentialService.findCredentialByHashcode(hashcode);
+    if (credential == null) return null;
 
     Client client = credential.getClient();
-    if (client == null)
-      return null;
+    if (client == null) return null;
 
     return client;
   }
 
   @Transactional(readOnly = true)
   @Override
-  public BalanceILS getLastBalanceUsingHashcode(int hashcode) {
-    Client c = getClientUsingHashcode(hashcode);
+  public BalanceILS findLastBalanceByHashcode(int hashcode) {
+    Client c = findClientByHashcode(hashcode);
     return balanceDaoImpl.findLastBalancesByClient(c, 1).get(0);
   }
 
   @Transactional(readOnly = true)
   @Override
-  public BalanceILS getLastBalanceUsingClient(Client c) {
+  public BalanceILS findLastBalanceByClient(Client c) {
     return balanceDaoImpl.findLastBalancesByClient(c, 1).get(0);
   }
 
+  @Transactional(readOnly = false)
   @Override
-  public BalanceILS setTransfer(Transfer data) {
-    int hashcode = Integer.parseInt(data.getHashcode());
-    Client c = getClientUsingHashcode(hashcode);
-    
-    // Testing this function. Result will be displayed on Console
-    getClientFromBankAccount(data.getAccountNumber());
+  public Transaction setTransaction(Transfer data) {
+    // Debit account
 
-    BalanceILS lastBalance = getLastBalanceUsingHashcode(hashcode);
-    TransferLogic transfer = new TransferLogic(data, lastBalance);
+    int hashcode = Integer.parseInt(data.getHashcode());
+    Client c = findClientByHashcode(hashcode);
+    BankAccount b = bankAccountDaoImpl.findBankAccountByClient(c);
+    int debitAccount = b.getBankAccountNumber();
+    
+    // Credit account
+    int creditAccount = data.getAccountNumber();
+
+    Transaction transaction = new Transaction(debitAccount, creditAccount, data.getAmount(), new Date() );
+    return transactionDao.save(transaction);
+  }
+
+  @Override
+  public void doTransaction(){
+    List<Transaction> transactionList = transactionDaoImpl.findTransactionByStatus(0);
+    log.info("Transaction list: " + transactionList.size());
+    
+
+    for(Transaction t: transactionList){
+      Client clientDebitAccount = findClientByBankAccount(t.getDebitAccount());
+      debitAccount(clientDebitAccount, t.getAmount());
+      
+      Client clientCreditAccount = findClientByBankAccount(t.getCreditAccount());
+      if (clientCreditAccount == null) 
+        clientCreditAccount = findClientByBankAccount(999991);
+      
+      creditAccount(clientCreditAccount, t.getAmount());
+      
+      t.setStatus(1);
+      transactionDao.save(t);
+    }
+  }
+
+  private BalanceILS creditAccount(Client client, int amount) {
+    BalanceILS lastBalance = findLastBalanceByClient(client);
+    if(lastBalance == null){
+      lastBalance = new BalanceILS();
+      lastBalance.setBalance(0);
+    }
+
+    BalanceILS creditBalance = new BalanceILS();
+    creditBalance.setClient(client);
+    creditBalance.setDebt(0);
+    creditBalance.setDate(new Date());
+    creditBalance.setCredit(amount);
+    creditBalance.setDescription("העברה בנקאית");
+    creditBalance.setBalance(lastBalance.getBalance() + amount );
+    return balanceDao.save(creditBalance);
+  }
+
+  private BalanceILS debitAccount(Client client, int amount) {
+    BalanceILS lastBalance = findLastBalanceByClient(client);
+
+    TransferLogic transfer = new TransferLogic(lastBalance);
     BalanceILS serviceCharge = transfer.getServiceCharge();
-    serviceCharge.setClient(c);
+    serviceCharge.setClient(client);
     balanceDao.save(serviceCharge);
 
-    BalanceILS balanceRelatedToTransfer = new BalanceILS();
-    balanceRelatedToTransfer.setClient(c);
-    balanceRelatedToTransfer.setBalance(serviceCharge.getBalance() - data.getAmount());
-    balanceRelatedToTransfer.setCredit(0);
-    balanceRelatedToTransfer.setDate(new Date());
-    balanceRelatedToTransfer.setDebt(data.getAmount());
-    balanceRelatedToTransfer.setDescription("העברה בנקאית");
-
-    return balanceDao.save(balanceRelatedToTransfer);
+    BalanceILS debitBalance = new BalanceILS();
+    debitBalance.setClient(client);
+    debitBalance.setBalance(serviceCharge.getBalance() - amount );
+    debitBalance.setCredit(0);
+    debitBalance.setDate(new Date());
+    debitBalance.setDebt(amount);
+    debitBalance.setDescription("העברה בנקאית");
+    return balanceDao.save(debitBalance);
+     
   }
 
   @Transactional(readOnly = true)
   @Override
   public Transfer isTransferPossible(Transfer data) {
-    BalanceILS balance = getLastBalanceUsingHashcode(Integer.parseInt(data.getHashcode()));
+    BalanceILS balance = findLastBalanceByHashcode(Integer.parseInt(data.getHashcode()));
     TransferLogic transfer = new TransferLogic(data, balance);
     return transfer.isTransferPossible();
     
   }
 
   @Transactional(readOnly = true)
-  public void getClientFromBankAccount(int bankAccountNumber) {
-    BankAccount bankAccount = bankAccountDao.findByBankAccountNumber(bankAccountNumber);
-    Client client = clientDaoImpl.findClientByBankAccount(bankAccount)
-    if (client != null) {
-      log.info("client: " + client.getClientId());
-      log.info("client " + client.getFirstName());  
-    }
-    
+  @Override
+  public Client findClientByBankAccount(int bankAccountNumber) {
+    BankAccount bankAccount = bankAccountDaoImpl.findBankAccountByAccountNumber(bankAccountNumber);
+    if (bankAccount == null) return null;
+
+    Client client = bankAccount.getClient();
+    return client;
   }
   
 

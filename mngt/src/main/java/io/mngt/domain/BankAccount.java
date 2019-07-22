@@ -1,5 +1,6 @@
 package io.mngt.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,8 +26,16 @@ public class BankAccount {
   @JoinColumn(name = "client_id")
   private Client client;
 
+  @Column(unique = true)
   private int bankAccountNumber;
   private String status;
 
-  
+  public BankAccount(){}
+
+  public BankAccount(Client client, int bankAccountNumber, String status){
+    this.client = client;
+    this.bankAccountNumber = bankAccountNumber;
+    this.status = status;
+  }
+
 }

@@ -2,9 +2,6 @@ package io.mngt.domain.business;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mngt.domain.BalanceILS;
 import io.mngt.domain.Transfer;
 import lombok.Data;
@@ -20,11 +17,18 @@ public class TransferLogic {
     this.data = data;
     this.lastBalanceILS = lastBalance;
     this.serviceCharge = setServiceCharge();
-
   }
 
-  private BalanceILS setServiceCharge() {
+  public TransferLogic(BalanceILS lastBalance) {
+    this.lastBalanceILS = lastBalance;
+    this.serviceCharge = setServiceCharge();
+  }
 
+  public TransferLogic() {}
+
+  private BalanceILS setServiceCharge() {
+    if(this.lastBalanceILS == null) return null;
+    
     this.serviceCharge = new BalanceILS();
     this.serviceCharge.setDebt(20);
     this.serviceCharge.setDescription("עמלת העברה");
@@ -36,6 +40,8 @@ public class TransferLogic {
   }
 
   public Transfer isTransferPossible() {
+    if (this.data == null) return null;
+    
     Transfer returnedData = new Transfer();
     returnedData = this.data;
     

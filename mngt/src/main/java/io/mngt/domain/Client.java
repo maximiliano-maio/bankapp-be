@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ public class Client implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(unique = true)
 	private String clientId;
 	private String firstName;
 	private String lastName;
@@ -51,7 +53,7 @@ public class Client implements Serializable {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ContactInfo contactInfo;
 
-	@JsonManagedReference(value = "2")
+	@JsonManagedReference(value = "client_loan")
 	@OneToMany(
 		mappedBy = "client", 
 		fetch = FetchType.LAZY)
@@ -69,7 +71,9 @@ public class Client implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
 	private Set<CheckBookOrder> checkBookOrder = new HashSet<>();
 
-	
+	public Client() {
+		super();
+	}
 
 	public Client(String clientId, String firstname, String lastname, String maritalStatus) {
 		this.clientId = clientId;
@@ -77,10 +81,6 @@ public class Client implements Serializable {
 		this.lastName = lastname;
 		this.maritalStatus = maritalStatus;
 	}
-
-	public Client() {}
-
-	
 
 	
 }

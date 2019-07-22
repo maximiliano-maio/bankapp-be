@@ -7,15 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import io.mngt.domain.Credential;
-import io.mngt.services.CredentialService;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
+import io.mngt.domain.Credential;
+import io.mngt.services.CredentialService;
+
 @CrossOrigin("*")
 @RestController
 public class CredentialController {
@@ -39,10 +36,6 @@ public class CredentialController {
   public @ResponseBody boolean logout(@RequestParam(name = "code") String hashcode) {
 
     return credentialService.logout(Integer.parseInt(hashcode));
-  }
-  @GetMapping(path = "/all")
-  public @ResponseBody Iterable<Credential> getAllUsers() {
-    return credentialService.findAll();
   }
   
 

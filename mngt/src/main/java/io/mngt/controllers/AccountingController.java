@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mngt.domain.BalanceILS;
+import io.mngt.domain.Transaction;
 import io.mngt.domain.Transfer;
 import io.mngt.services.AccountingService;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @CrossOrigin("*")
 @RestController
 public class AccountingController {
@@ -29,7 +28,7 @@ public class AccountingController {
   @RequestMapping("/getShortAccountBalances")
   @ResponseBody
   public List<BalanceILS> getShortAccountBalancesILS(@RequestParam( name = "code") String hashcode) {
-    return accountingService.findLast5(Integer.parseInt(hashcode));
+    return accountingService.findLast5BalanceIlsListByHashcode(Integer.parseInt(hashcode));
   }
   
 
@@ -37,7 +36,7 @@ public class AccountingController {
   @RequestMapping("/getLongAccountBalances")
   @ResponseBody
   public List<BalanceILS> getLongAccountBalancesILS(@RequestParam(name = "code") String hashcode) {
-    return accountingService.getLocalAccountBalance(Integer.parseInt(hashcode));
+    return accountingService.findBalanceIlsListByHashcode(Integer.parseInt(hashcode));
   }
 
   @PostMapping
@@ -50,7 +49,7 @@ public class AccountingController {
   @PostMapping
   @RequestMapping("/setTransfer")
   @ResponseBody
-  public BalanceILS setTransfer(@RequestBody Transfer data) {
-    return accountingService.setTransfer(data);
+  public Transaction setTransfer(@RequestBody Transfer data) {
+    return accountingService.setTransaction(data);
   }
 }

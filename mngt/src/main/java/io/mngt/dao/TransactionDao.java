@@ -3,10 +3,10 @@ package io.mngt.dao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import io.mngt.domain.Client;
+import io.mngt.domain.Transaction;
 
 @Repository
-public interface ClientDao extends JpaRepository<Client, Long> {
-  Client findByClientId(String clientId);
+public interface TransactionDao extends JpaRepository<Transaction, Long> {
+
   
 }

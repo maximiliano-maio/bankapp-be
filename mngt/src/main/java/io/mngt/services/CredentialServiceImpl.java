@@ -58,21 +58,22 @@ public class CredentialServiceImpl implements CredentialService {
     
   }
 
-  @Override
-  public Iterable<Credential> findAll() {
-    return credentialDao.findAll();
-  }
+  
 
   @Override
   public int isAuthenticated(int hashcode) {
     Credential c = getCredentialFromHashcode(hashcode);
     if (c == null) return 0;
+    
     return c.getStatus();
   }
 
   @Override
-  public Credential getCredential(int hashcode) {
-    return getCredentialFromHashcode(hashcode);
+  public Credential findCredentialByHashcode(int hashcode) {
+    Credential c = getCredentialFromHashcode(hashcode);
+    if (c == null) return null;
+
+    return c; 
   }
 
   @Override
@@ -85,7 +86,8 @@ public class CredentialServiceImpl implements CredentialService {
     
   }
 
-  public Credential getCredentialFromHashcode(int hashcode) {
+  public Credential getCredentialFromHashcode(int hashcode) throws NullPointerException {
+    
     Credential c = credentialDao.findByHashcode(hashcode);
     if (c == null) return null;
     

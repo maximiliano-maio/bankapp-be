@@ -74,16 +74,10 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     checks.setClient(client);
     checkBookOrderRepository.save(checks);
     
-    BankAccount bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("active");
-    bankAccount.setBankAccountNumber(100200);
+    BankAccount bankAccount = new BankAccount(client, 100200, "active");
     bankAccountRepository.save(bankAccount);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("disable");
-    bankAccount.setBankAccountNumber(100300);
+    bankAccount = new BankAccount(client, 100300, "disabled");
     bankAccountRepository.save(bankAccount);
 
     setBalances(client);
@@ -103,16 +97,10 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     checks.setClient(client);
     checkBookOrderRepository.save(checks);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("active");
-    bankAccount.setBankAccountNumber(200200);
+    bankAccount = new BankAccount(client, 200200, "active");
     bankAccountRepository.save(bankAccount);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("active");
-    bankAccount.setBankAccountNumber(200300);
+    bankAccount = new BankAccount(client, 200300, "active");
     bankAccountRepository.save(bankAccount);
 
     setBalances(client);
@@ -131,16 +119,10 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     checks.setClient(client);
     checkBookOrderRepository.save(checks);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("disable");
-    bankAccount.setBankAccountNumber(300200);
+    bankAccount = new BankAccount(client, 300200, "disabled");
     bankAccountRepository.save(bankAccount);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("disable");
-    bankAccount.setBankAccountNumber(300300);
+    bankAccount = new BankAccount(client, 300300, "disabled");
     bankAccountRepository.save(bankAccount);
 
     setBalances(client);
@@ -159,20 +141,31 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     checks.setClient(client);
     checkBookOrderRepository.save(checks);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("disable");
-    bankAccount.setBankAccountNumber(400200);
+    bankAccount = new BankAccount(client, 400200, "disabled");
     bankAccountRepository.save(bankAccount);
 
-    bankAccount = new BankAccount();
-    bankAccount.setClient(client);
-    bankAccount.setStatus("active");
-    bankAccount.setBankAccountNumber(400300);
+    bankAccount = new BankAccount(client, 400300, "active");
     bankAccountRepository.save(bankAccount);
 
     setBalances(client);
     setLoans(client);
+
+    // Bank account
+    client = new Client("999999", "Branch", "100", "4");
+
+    clientContactInfo = new ContactInfo();
+    clientContactInfo.setCity("Tel Aviv");
+    clientContactInfo.setEmail("branch_100@appbank.com");
+
+    client.setContactInfo(clientContactInfo);
+    clientRepository.save(client);
+    // Incoming
+    bankAccount = new BankAccount(client, 999990, "active");
+    bankAccountRepository.save(bankAccount);
+    // Outcoming
+    bankAccount = new BankAccount(client, 999991, "active");
+    bankAccountRepository.save(bankAccount);
+
   }
 
   private void setLoans(Client client) {
@@ -190,7 +183,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     BalanceILS balance = new BalanceILS();
     balance.setClient(client);
 
-    balance.setDebt(8000);
+    balance.setDebt(800);
     Date date = new GregorianCalendar(2018, Calendar.MARCH, 5).getTime();
     balance.setDate(date);
     balance.setDescription("קניות בשופרסל");
@@ -210,31 +203,31 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
 
     balance = new BalanceILS();
     balance.setClient(client);
-    balance.setCredit(6000);
+    balance.setCredit(8000);
     date = new GregorianCalendar(2018, Calendar.APRIL, 3).getTime();
     balance.setDate(date);
     balance.setDescription("משכורת");
-    balance.setBalance(59910);
+    balance.setBalance(61900);
 
     balanceILSRepository.save(balance);
 
     balance = new BalanceILS();
     balance.setClient(client);
-    balance.setDebt(500);
+    balance.setDebt(553);
     date = new GregorianCalendar(2018, Calendar.APRIL, 12).getTime();
     balance.setDate(date);
     balance.setDescription("מסעדה 2");
-    balance.setBalance(50410);
+    balance.setBalance(61347);
 
     balanceILSRepository.save(balance);
 
     balance = new BalanceILS();
     balance.setClient(client);
-    balance.setDebt(150);
+    balance.setDebt(158);
     date = new GregorianCalendar(2018, Calendar.APRIL, 15).getTime();
     balance.setDate(date);
     balance.setDescription("בר 1");
-    balance.setBalance(50260);
+    balance.setBalance(61189);
 
     balanceILSRepository.save(balance);
 
@@ -244,7 +237,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     date = new GregorianCalendar(2018, Calendar.APRIL, 18).getTime();
     balance.setDate(date);
     balance.setDescription("כלי בית");
-    balance.setBalance(49760);
+    balance.setBalance(60689);
 
     balanceILSRepository.save(balance);
 
@@ -254,37 +247,37 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     date = new GregorianCalendar(2018, Calendar.MAY, 2).getTime();
     balance.setDate(date);
     balance.setDescription("משכורת");
-    balance.setBalance(57760);
+    balance.setBalance(68689);
 
     balanceILSRepository.save(balance);
 
     balance = new BalanceILS();
     balance.setClient(client);
-    balance.setDebt(700);
+    balance.setDebt(243);
     date = new GregorianCalendar(2018, Calendar.MAY, 12).getTime();
     balance.setDate(date);
     balance.setDescription("מסעדה 4");
-    balance.setBalance(57060);
+    balance.setBalance(68446);
 
     balanceILSRepository.save(balance);
 
     balance = new BalanceILS();
     balance.setClient(client);
-    balance.setDebt(60);
+    balance.setDebt(167);
     date = new GregorianCalendar(2018, Calendar.MAY, 28).getTime();
     balance.setDate(date);
     balance.setDescription("מסעדה 5");
-    balance.setBalance(57000);
+    balance.setBalance(68279);
 
     balanceILSRepository.save(balance);
 
     balance = new BalanceILS();
     balance.setClient(client);
-    balance.setCredit(10000);
+    balance.setCredit(8000);
     date = new GregorianCalendar(2018, Calendar.JUNE, 2).getTime();
     balance.setDate(date);
     balance.setDescription("משכורת");
-    balance.setBalance(67000);
+    balance.setBalance(76279);
 
     balanceILSRepository.save(balance);
 
