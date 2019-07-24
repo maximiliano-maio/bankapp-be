@@ -24,17 +24,22 @@ public class TransferLogic {
     this.serviceCharge = setServiceCharge();
   }
 
-  public TransferLogic() {}
+  public TransferLogic() {
+    this.serviceCharge = setServiceCharge();
+  }
 
   private BalanceILS setServiceCharge() {
-    if(this.lastBalanceILS == null) return null;
-    
     this.serviceCharge = new BalanceILS();
     this.serviceCharge.setDebt(20);
     this.serviceCharge.setDescription("עמלת העברה");
     this.serviceCharge.setDate(new Date());
-    this.serviceCharge.setBalance(this.lastBalanceILS.getBalance() - this.serviceCharge.getDebt());
     this.serviceCharge.setCredit(0);
+
+    if (this.lastBalanceILS == null) {
+      this.serviceCharge.setBalance(- this.serviceCharge.getDebt());
+    }else{
+      this.serviceCharge.setBalance(this.lastBalanceILS.getBalance() - this.serviceCharge.getDebt());
+    }
 
     return this.serviceCharge;
   }

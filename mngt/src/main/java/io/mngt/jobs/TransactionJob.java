@@ -1,9 +1,7 @@
 package io.mngt.jobs;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.mngt.services.AccountingService;
@@ -11,19 +9,28 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class TransactionJob implements Job {
+public class TransactionJob {
 
   @Autowired
   private AccountingService accountingService;
   
-
-  @Override
-  public void execute(JobExecutionContext arg0) throws JobExecutionException {
+  @Scheduled(cron="0 0/2 * 1/1 * ?")
+  public void executeTransactions(){
     log.info("Transaction batch job is running...");
     accountingService.doTransaction();
 
     log.info("Transaction batch job has finished");
   }
+
+
+  /* @deprecated: Job implemented with Quartz dependency */
+  // @Override
+  /* public void execute(JobExecutionContext arg0) throws JobExecutionException {
+    log.info("Transaction batch job is running...");
+    accountingService.doTransaction();
+
+    log.info("Transaction batch job has finished");
+  } */
 
   
 }

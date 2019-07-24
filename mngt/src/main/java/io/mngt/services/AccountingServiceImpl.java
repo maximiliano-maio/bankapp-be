@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.mngt.dao.BalanceDao;
 import io.mngt.dao.BalanceDaoImpl;
-import io.mngt.dao.BankAccountDao;
 import io.mngt.dao.BankAccountDaoImpl;
 import io.mngt.dao.TransactionDao;
 import io.mngt.dao.TransactionDaoImpl;
@@ -33,14 +32,15 @@ public class AccountingServiceImpl implements AccountingService {
   @Autowired
   private BalanceDao balanceDao;
   @Autowired
-  private BankAccountDao bankAccountDao;
-  @Autowired
   private BankAccountDaoImpl bankAccountDaoImpl;
   @Autowired
   private TransactionDao transactionDao;
   @Autowired
   private TransactionDaoImpl transactionDaoImpl;
 
+  // TODO: A table will be built containing clients' and banks' accounts
+  private static final int OUTGOING_BANK_ACCOUNT = 999991;
+  private static final int INCOMING_BANK_ACCOUNT = 999990;
 
   @Transactional(readOnly = true)
   @Override
@@ -104,7 +104,7 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public void doTransaction(){
     List<Transaction> transactionList = transactionDaoImpl.findTransactionByStatus(0);
-    log.info("Transaction list: " + transactionList.size());
+    log.info("*** Transactions to be performed: " + transactionList.size() + " ***");
     
 
     for(Transaction t: transactionList){
@@ -113,7 +113,7 @@ public class AccountingServiceImpl implements AccountingService {
       
       Client clientCreditAccount = findClientByBankAccount(t.getCreditAccount());
       if (clientCreditAccount == null) 
-        clientCreditAccount = findClientByBankAccount(999991);
+        clientCreditAccount = findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
       
       creditAccount(clientCreditAccount, t.getAmount());
       
@@ -124,10 +124,21 @@ public class AccountingServiceImpl implements AccountingService {
 
   private BalanceILS creditAccount(Client client, int amount) {
     BalanceILS lastBalance = findLastBalanceByClient(client);
+    
     if(lastBalance == null){
       lastBalance = new BalanceILS();
       lastBalance.setBalance(0);
     }
+    
+    // TODO: To improve drastically! Credit bank's account with commission deducted from client's account
+    TransferLogic transfer = new TransferLogic();
+    BalanceILS serviceCharge = transfer.getServiceCharge();
+    Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
+    serviceCharge.setClient(bankAccount);
+    serviceCharge.setCredit(serviceCharge.getDebt());
+    serviceCharge.setDebt(0);
+    serviceCharge.setBalance(-serviceCharge.getBalance());
+    balanceDao.save(serviceCharge);
 
     BalanceILS creditBalance = new BalanceILS();
     creditBalance.setClient(client);
@@ -142,6 +153,7 @@ public class AccountingServiceImpl implements AccountingService {
   private BalanceILS debitAccount(Client client, int amount) {
     BalanceILS lastBalance = findLastBalanceByClient(client);
 
+    // To charge client with commission
     TransferLogic transfer = new TransferLogic(lastBalance);
     BalanceILS serviceCharge = transfer.getServiceCharge();
     serviceCharge.setClient(client);
