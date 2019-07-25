@@ -20,5 +20,6 @@ public interface AccountingService {
   Transfer isTransferPossible(Transfer data);
 
   void doTransaction();
+  List<Transaction> getOutgoingTransactions();
 
 }

@@ -1,5 +1,7 @@
 package io.mngt.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -28,10 +30,14 @@ public class BankAccountDaoImpl {
   }
   
   public BankAccount findBankAccountByAccountNumber(int bankAccountNumber){
-    return em.createQuery(FIND_BANK_ACCOUNT_BY_ACCOUNT_NUMBER, BankAccount.class)
+   
+    List<BankAccount> bankAccountList = em.createQuery(FIND_BANK_ACCOUNT_BY_ACCOUNT_NUMBER, BankAccount.class)
     .setParameter("bankAccountNumber", bankAccountNumber)
-    .getResultList().get(0);
-    
+    .getResultList();
+
+    if(bankAccountList.size() > 0) return bankAccountList.get(0);
+
+    return null;
   }
   
 

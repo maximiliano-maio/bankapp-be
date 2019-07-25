@@ -14,12 +14,23 @@ public class TransactionJob {
   @Autowired
   private AccountingService accountingService;
   
-  @Scheduled(cron="0 0/2 * 1/1 * ?")
+  // Each day at 20 hs (for PROD env.)
+  // @Scheduled(cron="0 0 20 1/1 * ?")
+  
+  // Each 2 minutes
+  @Scheduled(cron="0 0/1 * 1/1 * ?")
   public void executeTransactions(){
     log.info("Transaction batch job is running...");
     accountingService.doTransaction();
 
     log.info("Transaction batch job has finished");
+  }
+
+  @Scheduled(cron = "0 0/1 * 1/1 * ?")
+  public void buildOutgoingTransactionFile(){
+    log.info("Building Outgoing transaction file...");
+    accountingService.getOutgoingTransactions();
+
   }
 
 

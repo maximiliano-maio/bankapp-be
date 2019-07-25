@@ -48,7 +48,7 @@ public class AccountingServiceImpl implements AccountingService {
     Client c = findClientByHashcode(hashcode);
     if (c == null) return null;
 
-    return c.getBalance();
+    return balanceDaoImpl.findLastBalancesByClient(c, 20);
   }
 
   @Transactional(readOnly = true)
@@ -81,7 +81,10 @@ public class AccountingServiceImpl implements AccountingService {
   @Transactional(readOnly = true)
   @Override
   public BalanceILS findLastBalanceByClient(Client c) {
-    return balanceDaoImpl.findLastBalancesByClient(c, 1).get(0);
+    List<BalanceILS> balanceIlsList = balanceDaoImpl.findLastBalancesByClient(c, 1);
+    if(balanceIlsList.size()>0) return balanceIlsList.get(0);
+
+    return null;
   }
 
   @Transactional(readOnly = false)
@@ -123,6 +126,7 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   private BalanceILS creditAccount(Client client, int amount) {
+    
     BalanceILS lastBalance = findLastBalanceByClient(client);
     
     if(lastBalance == null){
@@ -187,6 +191,15 @@ public class AccountingServiceImpl implements AccountingService {
 
     Client client = bankAccount.getClient();
     return client;
+  }
+
+  @Override
+  public List<Transaction> getOutgoingTransactions() {
+    List<Transaction> transactionList = transactionDaoImpl.findTransactionByStatus(1);
+    
+    
+    
+    return null;
   }
   
 
