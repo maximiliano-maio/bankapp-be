@@ -1,7 +1,7 @@
 package io.mngt.services;
 
-import io.mngt.domain.Client;
-import io.mngt.domain.ContactInfo;
+import io.mngt.entity.Client;
+import io.mngt.entity.ContactInfo;
 
 public interface ClientService {
     Client setClient(Client client);

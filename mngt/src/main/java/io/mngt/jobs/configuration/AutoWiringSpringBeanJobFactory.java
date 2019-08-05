@@ -1,6 +1,6 @@
 package io.mngt.jobs.configuration;
 
-/*
+/* DEPRECATED
  * public final class AutoWiringSpringBeanJobFactory extends
  * SpringBeanJobFactory implements ApplicationContextAware {
  * 

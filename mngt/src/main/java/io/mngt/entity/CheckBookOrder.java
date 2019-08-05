@@ -1,4 +1,4 @@
-package io.mngt.domain;
+package io.mngt.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -1,12 +1,15 @@
-package io.mngt.domain.business;
+package io.mngt.business;
 
 import java.util.Date;
 
-import io.mngt.domain.BalanceILS;
-import io.mngt.domain.Transfer;
+import org.springframework.stereotype.Component;
+
+import io.mngt.entity.Transfer;
+import io.mngt.entity.BalanceILS;
 import lombok.Data;
 
 @Data
+@Component
 public class TransferLogic {
 
   private BalanceILS lastBalanceILS;

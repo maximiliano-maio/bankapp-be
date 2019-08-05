@@ -1,6 +1,7 @@
-package io.mngt.domain;
+package io.mngt.entity;
 
-import javax.persistence.Column;
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,31 +12,30 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import org.hibernate.annotations.NamedQuery;
+
 import lombok.Data;
 
 @Data
 @Entity
-public class BankAccount {
+@NamedQuery(query = "SELECT b FROM BalanceILS b WHERE b.client = :id", name = "find balances by client")
+public class BalanceILS {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @JsonBackReference(value = "client_bankaccount")
+  @JsonBackReference(value = "client_balanceils")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "client_id")
   private Client client;
 
-  @Column(unique = true)
-  private int bankAccountNumber;
-  private String status;
-
-  public BankAccount(){}
-
-  public BankAccount(Client client, int bankAccountNumber, String status){
-    this.client = client;
-    this.bankAccountNumber = bankAccountNumber;
-    this.status = status;
-  }
+  private Date date;
+  private String description;
+  
+  private int debt;
+  private int credit;
+  private int balance;
+  
 
 }

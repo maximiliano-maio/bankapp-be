@@ -1,12 +1,14 @@
 package io.mngt.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-import io.mngt.domain.Transaction;
+import io.mngt.entity.Transaction;
 
-@Repository
-public interface TransactionDao extends JpaRepository<Transaction, Long> {
+public interface TransactionDao {
 
+  void persist(TransactionDao transactionDao);
+  List<Transaction> findTransactionByStatus(int status);
+  Transaction save(Transaction transaction);
+  List<Transaction> findTransactionByExternalAccount(boolean isAccountExternal);
   
 }

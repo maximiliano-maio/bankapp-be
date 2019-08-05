@@ -1,4 +1,4 @@
-package io.mngt.domain;
+package io.mngt.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;

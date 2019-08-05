@@ -1,12 +1,17 @@
 package io.mngt.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-import io.mngt.domain.Client;
+import io.mngt.entity.Client;
 
-@Repository
-public interface ClientDao extends JpaRepository<Client, Long> {
-  Client findByClientId(String clientId);
+public interface ClientDao {
   
+  void persist(Client client);
+  Client findByClientId(String clientId);
+  Client save(Client client);
+  Optional<Client> findById(Long id);
+  void delete(Client client);
+
+  Iterable<Client> findAll();
+
 }

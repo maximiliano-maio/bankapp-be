@@ -2,7 +2,7 @@ package io.mngt.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 
-import io.mngt.domain.Credential;
+import io.mngt.entity.Credential;
 
 public interface CredentialRepository extends CrudRepository<Credential, Long> {
   // it works

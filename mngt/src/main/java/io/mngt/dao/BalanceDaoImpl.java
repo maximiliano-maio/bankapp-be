@@ -5,29 +5,45 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.mngt.domain.BalanceILS;
-import io.mngt.domain.Client;
+import io.mngt.entity.BalanceILS;
+import io.mngt.entity.Client;
+import io.mngt.repositories.BalanceILSRepository;
 
 @Component
-public class BalanceDaoImpl {
+public class BalanceDaoImpl implements BalanceDao {
+
+  @Autowired
+  private BalanceILSRepository balanceILSRepository;
 
   private static final String LAST_X_BALANCES_OF_CLIENT = "SELECT b FROM BalanceILS b WHERE b.client = :client ORDER BY b.id DESC";
   
   @PersistenceContext
   private EntityManager em;
 
+  @Override
   public void persist(BalanceILS balance) {
     em.persist(balance);
   }
 
-
+  @Override
   public List<BalanceILS> findLastBalancesByClient(Client c, int x) {
     return em.createQuery(LAST_X_BALANCES_OF_CLIENT, BalanceILS.class)
       .setParameter("client", c)
       .setMaxResults(x)
       .getResultList();
+  }
+
+  @Override
+  public List<BalanceILS> findByClient(Client client) {
+    return null;
+  }
+
+  @Override
+  public BalanceILS save(BalanceILS balanceILS) {
+    return balanceILSRepository.save(balanceILS);
   }
   
 }

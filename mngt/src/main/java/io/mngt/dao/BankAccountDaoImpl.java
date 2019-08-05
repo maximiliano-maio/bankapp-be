@@ -7,11 +7,11 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Component;
 
-import io.mngt.domain.BankAccount;
-import io.mngt.domain.Client;
+import io.mngt.entity.BankAccount;
+import io.mngt.entity.Client;
 
 @Component
-public class BankAccountDaoImpl {
+public class BankAccountDaoImpl implements BankAccountDao {
 
   private static final String FIND_BANK_ACCOUNT_BY_CLIENT = "SELECT b FROM BankAccount b WHERE b.client = :client";
   private static final String FIND_BANK_ACCOUNT_BY_ACCOUNT_NUMBER= "SELECT b FROM BankAccount b JOIN FETCH b.client WHERE b.bankAccountNumber = :bankAccountNumber";
@@ -19,16 +19,19 @@ public class BankAccountDaoImpl {
   @PersistenceContext
   private EntityManager em;
   
+  @Override
   public void persist(BankAccount bankAccount) {
     em.persist(bankAccount);
   }
 
+  @Override
   public BankAccount findBankAccountByClient(Client client){
     return em.createQuery(FIND_BANK_ACCOUNT_BY_CLIENT, BankAccount.class)
       .setParameter("client", client)
       .getResultList().get(0);
   }
   
+  @Override
   public BankAccount findBankAccountByAccountNumber(int bankAccountNumber){
    
     List<BankAccount> bankAccountList = em.createQuery(FIND_BANK_ACCOUNT_BY_ACCOUNT_NUMBER, BankAccount.class)

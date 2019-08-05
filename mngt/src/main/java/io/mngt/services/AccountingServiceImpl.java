@@ -1,5 +1,7 @@
 package io.mngt.services;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -7,18 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.mngt.business.TransferLogic;
 import io.mngt.dao.BalanceDao;
-import io.mngt.dao.BalanceDaoImpl;
-import io.mngt.dao.BankAccountDaoImpl;
+import io.mngt.dao.BankAccountDao;
+import io.mngt.dao.StandingOrderDao;
 import io.mngt.dao.TransactionDao;
-import io.mngt.dao.TransactionDaoImpl;
-import io.mngt.domain.BalanceILS;
-import io.mngt.domain.BankAccount;
-import io.mngt.domain.Client;
-import io.mngt.domain.Credential;
-import io.mngt.domain.Transaction;
-import io.mngt.domain.Transfer;
-import io.mngt.domain.business.TransferLogic;
+import io.mngt.entity.BalanceILS;
+import io.mngt.entity.BankAccount;
+import io.mngt.entity.Client;
+import io.mngt.entity.Credential;
+import io.mngt.entity.StandingOrder;
+import io.mngt.entity.Transaction;
+import io.mngt.entity.Transfer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,17 +30,17 @@ public class AccountingServiceImpl implements AccountingService {
   @Autowired
   private CredentialService credentialService;
   @Autowired
-  private BalanceDaoImpl balanceDaoImpl;
-  @Autowired
   private BalanceDao balanceDao;
   @Autowired
-  private BankAccountDaoImpl bankAccountDaoImpl;
+  private BankAccountDao bankAccountDao;
   @Autowired
   private TransactionDao transactionDao;
   @Autowired
-  private TransactionDaoImpl transactionDaoImpl;
+  private StandingOrderDao standingOrderDao;
+  @Autowired
+  private TransferLogic transfer;
 
-  // TODO: A table will be built containing clients' and banks' accounts
+  // TODO: Retrieve bank accounts by branch where client's account was opened
   private static final int OUTGOING_BANK_ACCOUNT = 999991;
   private static final int INCOMING_BANK_ACCOUNT = 999990;
 
@@ -48,7 +50,7 @@ public class AccountingServiceImpl implements AccountingService {
     Client c = findClientByHashcode(hashcode);
     if (c == null) return null;
 
-    return balanceDaoImpl.findLastBalancesByClient(c, 20);
+    return balanceDao.findLastBalancesByClient(c, 20);
   }
 
   @Transactional(readOnly = true)
@@ -56,7 +58,7 @@ public class AccountingServiceImpl implements AccountingService {
     Client c = findClientByHashcode(hashcode);
     if (c == null) return null;
 
-    return balanceDaoImpl.findLastBalancesByClient(c, 5);
+    return balanceDao.findLastBalancesByClient(c, 5);
   }
 
   @Transactional(readOnly = true)
@@ -75,13 +77,13 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public BalanceILS findLastBalanceByHashcode(int hashcode) {
     Client c = findClientByHashcode(hashcode);
-    return balanceDaoImpl.findLastBalancesByClient(c, 1).get(0);
+    return balanceDao.findLastBalancesByClient(c, 1).get(0);
   }
 
   @Transactional(readOnly = true)
   @Override
   public BalanceILS findLastBalanceByClient(Client c) {
-    List<BalanceILS> balanceIlsList = balanceDaoImpl.findLastBalancesByClient(c, 1);
+    List<BalanceILS> balanceIlsList = balanceDao.findLastBalancesByClient(c, 1);
     if(balanceIlsList.size()>0) return balanceIlsList.get(0);
 
     return null;
@@ -94,7 +96,7 @@ public class AccountingServiceImpl implements AccountingService {
 
     int hashcode = Integer.parseInt(data.getHashcode());
     Client c = findClientByHashcode(hashcode);
-    BankAccount b = bankAccountDaoImpl.findBankAccountByClient(c);
+    BankAccount b = bankAccountDao.findBankAccountByClient(c);
     int debitAccount = b.getBankAccountNumber();
     
     // Credit account
@@ -106,7 +108,7 @@ public class AccountingServiceImpl implements AccountingService {
 
   @Override
   public void doTransaction(){
-    List<Transaction> transactionList = transactionDaoImpl.findTransactionByStatus(0);
+    List<Transaction> transactionList = transactionDao.findTransactionByStatus(0);
     log.info("*** Transactions to be performed: " + transactionList.size() + " ***");
     
 
@@ -115,8 +117,12 @@ public class AccountingServiceImpl implements AccountingService {
       debitAccount(clientDebitAccount, t.getAmount());
       
       Client clientCreditAccount = findClientByBankAccount(t.getCreditAccount());
-      if (clientCreditAccount == null) 
+      if (clientCreditAccount == null) {
         clientCreditAccount = findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
+        t.setAccountExternal(true);
+      }else{
+        t.setAccountExternal(false);
+      }
       
       creditAccount(clientCreditAccount, t.getAmount());
       
@@ -135,7 +141,7 @@ public class AccountingServiceImpl implements AccountingService {
     }
     
     // TODO: To improve drastically! Credit bank's account with commission deducted from client's account
-    TransferLogic transfer = new TransferLogic();
+    transfer = new TransferLogic();
     BalanceILS serviceCharge = transfer.getServiceCharge();
     Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
     serviceCharge.setClient(bankAccount);
@@ -157,8 +163,8 @@ public class AccountingServiceImpl implements AccountingService {
   private BalanceILS debitAccount(Client client, int amount) {
     BalanceILS lastBalance = findLastBalanceByClient(client);
 
-    // To charge client with commission
-    TransferLogic transfer = new TransferLogic(lastBalance);
+    // Deduct commission from Client
+    transfer = new TransferLogic(lastBalance);
     BalanceILS serviceCharge = transfer.getServiceCharge();
     serviceCharge.setClient(client);
     balanceDao.save(serviceCharge);
@@ -178,7 +184,7 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public Transfer isTransferPossible(Transfer data) {
     BalanceILS balance = findLastBalanceByHashcode(Integer.parseInt(data.getHashcode()));
-    TransferLogic transfer = new TransferLogic(data, balance);
+    transfer = new TransferLogic(data, balance);
     return transfer.isTransferPossible();
     
   }
@@ -186,7 +192,7 @@ public class AccountingServiceImpl implements AccountingService {
   @Transactional(readOnly = true)
   @Override
   public Client findClientByBankAccount(int bankAccountNumber) {
-    BankAccount bankAccount = bankAccountDaoImpl.findBankAccountByAccountNumber(bankAccountNumber);
+    BankAccount bankAccount = bankAccountDao.findBankAccountByAccountNumber(bankAccountNumber);
     if (bankAccount == null) return null;
 
     Client client = bankAccount.getClient();
@@ -195,11 +201,53 @@ public class AccountingServiceImpl implements AccountingService {
 
   @Override
   public List<Transaction> getOutgoingTransactions() {
-    List<Transaction> transactionList = transactionDaoImpl.findTransactionByStatus(1);
+    return transactionDao.findTransactionByExternalAccount(true);
+  }
+
+  @Override
+  public StandingOrder setStandingOrder(StandingOrder data) {
     
     
+    int hashcode = Integer.parseInt(data.getHashcode());
+    Client client = findClientByHashcode(hashcode);
+
+    StandingOrder standingOrder = new StandingOrder();
+    standingOrder.setClient(client);
+    standingOrder.setAmount(data.getAmount());
+    standingOrder.setCompanyName(data.getCompanyName());
     
-    return null;
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    String dateString = simpleDateFormat.format(data.getDate());
+    Date date;
+    try {
+      date = simpleDateFormat.parse(dateString);
+      standingOrder.setDate(date);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    
+    standingOrder.setFrecuency(data.getFrecuency());
+    
+    return standingOrderDao.save(standingOrder);
+  }
+
+  @Override
+  public void doStandingOrder() {
+    // TODO: Check each standing order date and perform a balance transaction
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    Date today = new Date();
+    try {
+      today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    List<StandingOrder> standingOrderList = standingOrderDao.findAllStandingOrdersByDate(today);
+    if (standingOrderList != null) {
+      for (StandingOrder so : standingOrderList) {
+        log.info("Id: " + so.getId() + ". Date: " + so.getDate());
+      }
+    }
+    
   }
   
 

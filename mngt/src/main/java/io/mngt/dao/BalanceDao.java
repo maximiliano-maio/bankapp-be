@@ -2,16 +2,15 @@ package io.mngt.dao;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import io.mngt.entity.BalanceILS;
+import io.mngt.entity.Client;
 
-import io.mngt.domain.BalanceILS;
-import io.mngt.domain.Client;
+public interface BalanceDao {
 
-@Repository
-public interface BalanceDao extends JpaRepository<BalanceILS, Long> {
+  void persist(BalanceILS balance);
+  List<BalanceILS> findByClient(Client client);
+  BalanceILS save(BalanceILS balanceILS);
 
-  public List<BalanceILS> findByClient(Client client);
-
+  List<BalanceILS> findLastBalancesByClient(Client c, int x);
 
 }

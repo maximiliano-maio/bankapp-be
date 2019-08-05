@@ -2,10 +2,11 @@ package io.mngt.services;
 
 import java.util.List;
 
-import io.mngt.domain.BalanceILS;
-import io.mngt.domain.Client;
-import io.mngt.domain.Transaction;
-import io.mngt.domain.Transfer;
+import io.mngt.entity.BalanceILS;
+import io.mngt.entity.Client;
+import io.mngt.entity.StandingOrder;
+import io.mngt.entity.Transaction;
+import io.mngt.entity.Transfer;
 
 public interface AccountingService {
   List<BalanceILS> findBalanceIlsListByHashcode(int hashcode);
@@ -20,6 +21,8 @@ public interface AccountingService {
   Transfer isTransferPossible(Transfer data);
 
   void doTransaction();
+  void doStandingOrder();
   List<Transaction> getOutgoingTransactions();
+  StandingOrder setStandingOrder(StandingOrder data);
 
 }

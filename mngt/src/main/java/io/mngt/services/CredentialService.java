@@ -1,6 +1,6 @@
 package io.mngt.services;
 
-import io.mngt.domain.Credential;
+import io.mngt.entity.Credential;
 
 public interface CredentialService {
   Credential login(String username, String password);

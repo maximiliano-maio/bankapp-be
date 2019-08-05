@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.mngt.dao.ClientDao;
 import io.mngt.dao.ContactInfoDao;
-import io.mngt.domain.Client;
-import io.mngt.domain.ContactInfo;
+import io.mngt.entity.Client;
+import io.mngt.entity.ContactInfo;
 import io.mngt.exceptions.NotFoundException;
 
 @Service

@@ -30,7 +30,14 @@ public class TransactionJob {
   public void buildOutgoingTransactionFile(){
     log.info("Building Outgoing transaction file...");
     accountingService.getOutgoingTransactions();
+    log.info("Outgoing transaction file's finished...");
+  }
 
+  @Scheduled(cron = "0 0/1 * 1/1 * ?")
+  public void executeStandingOrders(){
+    log.info("Standing orders job is running...");
+    accountingService.doStandingOrder();
+    log.info("Standing orders job has finished...");
   }
 
 

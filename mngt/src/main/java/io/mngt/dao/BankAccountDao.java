@@ -1,12 +1,13 @@
 package io.mngt.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import io.mngt.entity.BankAccount;
+import io.mngt.entity.Client;
 
-import io.mngt.domain.BankAccount;
+public interface BankAccountDao {
 
-@Repository
-public interface BankAccountDao extends JpaRepository<BankAccount, Long> {
+  void persist(BankAccount bankAccount);
+  BankAccount findBankAccountByClient(Client client);
+  BankAccount findBankAccountByAccountNumber(int bankAccountNumber);
 
-  // BankAccount findByBankAccountNumber(int bankAccountNumber);
+  
 }
