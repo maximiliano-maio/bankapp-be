@@ -4,12 +4,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.mngt.business.TransferLogic;
+import io.mngt.business.BankCommission;
 import io.mngt.dao.BalanceDao;
 import io.mngt.dao.BankAccountDao;
 import io.mngt.dao.StandingOrderDao;
@@ -37,10 +38,11 @@ public class AccountingServiceImpl implements AccountingService {
   private TransactionDao transactionDao;
   @Autowired
   private StandingOrderDao standingOrderDao;
+  
+  // @Deprecated @Autowired private BankCommission bankCommission;
   @Autowired
-  private TransferLogic transfer;
+  private Transaction transaction;
 
-  // TODO: Retrieve bank accounts by branch where client's account was opened
   private static final int OUTGOING_BANK_ACCOUNT = 999991;
   private static final int INCOMING_BANK_ACCOUNT = 999990;
 
@@ -102,91 +104,92 @@ public class AccountingServiceImpl implements AccountingService {
     // Credit account
     int creditAccount = data.getAccountNumber();
 
-    Transaction transaction = new Transaction(debitAccount, creditAccount, data.getAmount(), new Date() );
+    transaction.setDebitAccount(debitAccount);
+    transaction.setCreditAccount(creditAccount);
+    transaction.setAmount(data.getAmount());
+    transaction.setDate(new Date());
+    transaction.setStatus(0);
+
     return transactionDao.save(transaction);
   }
 
   @Override
   public void doTransaction(){
     List<Transaction> transactionList = transactionDao.findTransactionByStatus(0);
-    log.info("*** Transactions to be performed: " + transactionList.size() + " ***");
-    
-
-    for(Transaction t: transactionList){
+    for (Transaction t : transactionList) {
+      // ---- Debit ----
       Client clientDebitAccount = findClientByBankAccount(t.getDebitAccount());
-      debitAccount(clientDebitAccount, t.getAmount());
-      
+      debitAccount(clientDebitAccount, t.getAmount(), "העברה בנקאית");
+      debitAccount(clientDebitAccount, 20, "עמלה בנקאית");
+
+      // ---- Credit ----
       Client clientCreditAccount = findClientByBankAccount(t.getCreditAccount());
       if (clientCreditAccount == null) {
         clientCreditAccount = findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
         t.setAccountExternal(true);
-      }else{
+      } else {
         t.setAccountExternal(false);
       }
-      
-      creditAccount(clientCreditAccount, t.getAmount());
-      
+
+      creditAccount(clientCreditAccount, t.getAmount(), "העברה בנקאית");
+      Client creditBankAccount = findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
+      creditAccount(creditBankAccount, 20, "עמלה בנקאית");
+
       t.setStatus(1);
       transactionDao.save(t);
     }
+    
   }
 
-  private BalanceILS creditAccount(Client client, int amount) {
+  private BalanceILS creditAccount(Client client, int amount, String description) {
     
     BalanceILS lastBalance = findLastBalanceByClient(client);
     
-    if(lastBalance == null){
-      lastBalance = new BalanceILS();
-      lastBalance.setBalance(0);
-    }
-    
-    // TODO: To improve drastically! Credit bank's account with commission deducted from client's account
-    transfer = new TransferLogic();
-    BalanceILS serviceCharge = transfer.getServiceCharge();
-    Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
-    serviceCharge.setClient(bankAccount);
-    serviceCharge.setCredit(serviceCharge.getDebt());
-    serviceCharge.setDebt(0);
-    serviceCharge.setBalance(-serviceCharge.getBalance());
-    balanceDao.save(serviceCharge);
-
     BalanceILS creditBalance = new BalanceILS();
     creditBalance.setClient(client);
     creditBalance.setDebt(0);
     creditBalance.setDate(new Date());
     creditBalance.setCredit(amount);
-    creditBalance.setDescription("העברה בנקאית");
+    creditBalance.setDescription(description);
     creditBalance.setBalance(lastBalance.getBalance() + amount );
     return balanceDao.save(creditBalance);
   }
 
-  private BalanceILS debitAccount(Client client, int amount) {
+  private BalanceILS debitAccount(Client client, int amount, String description) {
     BalanceILS lastBalance = findLastBalanceByClient(client);
-
-    // Deduct commission from Client
-    transfer = new TransferLogic(lastBalance);
-    BalanceILS serviceCharge = transfer.getServiceCharge();
-    serviceCharge.setClient(client);
-    balanceDao.save(serviceCharge);
 
     BalanceILS debitBalance = new BalanceILS();
     debitBalance.setClient(client);
-    debitBalance.setBalance(serviceCharge.getBalance() - amount );
+    debitBalance.setBalance(lastBalance.getBalance() - amount );
     debitBalance.setCredit(0);
     debitBalance.setDate(new Date());
     debitBalance.setDebt(amount);
-    debitBalance.setDescription("העברה בנקאית");
+    debitBalance.setDescription(description);
     return balanceDao.save(debitBalance);
-     
   }
+
+  
+  
 
   @Transactional(readOnly = true)
   @Override
   public Transfer isTransferPossible(Transfer data) {
-    BalanceILS balance = findLastBalanceByHashcode(Integer.parseInt(data.getHashcode()));
-    transfer = new TransferLogic(data, balance);
-    return transfer.isTransferPossible();
+    int hashcode = Integer.parseInt(data.getHashcode());
+    BalanceILS lastBalanceILS = findLastBalanceByHashcode(hashcode);
     
+    Transfer returnedData = data;
+    int balanceAvailable = lastBalanceILS.getBalance();
+    // TODO: Get a better way to set commissions
+    int amountToTransfer = 20 + data.getAmount();
+
+    if (balanceAvailable < amountToTransfer) {
+      returnedData.setTransferPossible(false);
+      returnedData.setCommission(0);
+    } else {
+      returnedData.setTransferPossible(true);
+      returnedData.setCommission(20);
+    }
+    return returnedData;
   }
 
   @Transactional(readOnly = true)
@@ -206,8 +209,6 @@ public class AccountingServiceImpl implements AccountingService {
 
   @Override
   public StandingOrder setStandingOrder(StandingOrder data) {
-    
-    
     int hashcode = Integer.parseInt(data.getHashcode());
     Client client = findClientByHashcode(hashcode);
 
@@ -227,26 +228,50 @@ public class AccountingServiceImpl implements AccountingService {
     }
     
     standingOrder.setFrecuency(data.getFrecuency());
+    standingOrder.setStatus(0);
     
     return standingOrderDao.save(standingOrder);
   }
 
   @Override
   public void doStandingOrder() {
-    // TODO: Check each standing order date and perform a balance transaction
+    // TODO: Set next Standing Order once today's deduction is performed
+    
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     Date today = new Date();
+    
     try {
       today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
     } catch (ParseException e) {
       e.printStackTrace();
     }
+    
     List<StandingOrder> standingOrderList = standingOrderDao.findAllStandingOrdersByDate(today);
+    
     if (standingOrderList != null) {
+
+      Date soDate = new Date();
+
       for (StandingOrder so : standingOrderList) {
         log.info("Id: " + so.getId() + ". Date: " + so.getDate());
+        try {
+           soDate = simpleDateFormat.parse(simpleDateFormat.format(so.getDate()));
+        } catch (ParseException e) {
+          e.printStackTrace();
+        }
+        Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
+
+        if(soDate.equals(today)){
+          debitAccount(so.getClient(), so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
+          creditAccount(bankAccount, so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
+          so.setStatus(1);
+          
+        }
+        // TODO: If 'Standing Order' got performed, so set next Standing Order
       }
+
     }
+      
     
   }
   

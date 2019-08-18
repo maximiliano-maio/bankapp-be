@@ -6,6 +6,8 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.mngt.business.ValidationCodeGenerator;
+import io.mngt.dao.ClientDao;
 import io.mngt.dao.CredentialDao;
 import io.mngt.entity.Credential;
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +22,19 @@ public class CredentialServiceImpl implements CredentialService {
 
   @Autowired
   private CredentialDao credentialDao;
+  @Autowired
+  private ClientDao clientDao;
+
+  @Autowired
+  private ValidationCodeGenerator validationCodeGenerator;
 
   @Override
   public Credential login(String username, String password) {
+    
     credentialFromDB = credentialDao.findByUsername(username);
     if (credentialFromDB == null) return null;
 
-    // If Credential exists, so..
     if (password.equals(credentialFromDB.getPassword())) {
-      
       log.info("Credentials are correct");
       
       // Generate HashCode from username, password and date:
@@ -50,15 +56,11 @@ public class CredentialServiceImpl implements CredentialService {
       returnedCredential.setHashcode(credentialFromDB.getHashcode());
 
       return returnedCredential;
-      
     } else {
       log.info("Username and Password are not correct");
       return null;
     }
-    
   }
-
-  
 
   @Override
   public int isAuthenticated(int hashcode) {
@@ -87,11 +89,15 @@ public class CredentialServiceImpl implements CredentialService {
   }
 
   public Credential getCredentialFromHashcode(int hashcode) throws NullPointerException {
-    
     Credential c = credentialDao.findByHashcode(hashcode);
     if (c == null) return null;
     
     return c;
+  }
+
+  @Override
+  public int getValidationCode(String clientId) {
+    return validationCodeGenerator.generateCode(4);
   }
   
 }

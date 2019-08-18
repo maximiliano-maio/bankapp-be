@@ -10,10 +10,13 @@ import javax.persistence.Id;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import org.springframework.stereotype.Component;
+
 import lombok.Data;
 
 @Data
 @Entity
+@Component
 @JacksonXmlRootElement(localName = "Transaction")
 public class Transaction {
 
@@ -37,27 +40,4 @@ public class Transaction {
   // Status: 0 - recorded; Status: 1 - Performed
   private int status;
 
-  public Transaction(int debitAccount, int creditAccount, int amount, Date date, boolean isAccountExternal){
-    this.debitAccount = debitAccount;
-    this.creditAccount = creditAccount;
-    this.amount = amount;
-    this.date = date;
-    this.status = 0;
-    this.isAccountExternal = isAccountExternal;
-  }
-
-  public Transaction(int debitAccount, int creditAccount, int amount, Date date) {
-    this.debitAccount = debitAccount;
-    this.creditAccount = creditAccount;
-    this.amount = amount;
-    this.date = date;
-    this.status = 0;
-    this.isAccountExternal = false;
-  }
-
-  public Transaction() {
-    super();
-  }
-
-  
 }

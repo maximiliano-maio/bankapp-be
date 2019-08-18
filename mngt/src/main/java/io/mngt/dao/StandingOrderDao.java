@@ -11,4 +11,6 @@ public interface StandingOrderDao {
   List<StandingOrder> findAllStandingOrdersByDate(Date date);
   StandingOrder save(StandingOrder standingOrder);
   
+  StandingOrder update(StandingOrder standingOrder);
+  
 }

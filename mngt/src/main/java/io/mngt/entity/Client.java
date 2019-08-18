@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -36,6 +37,7 @@ public class Client implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String maritalStatus;
+	private int validationCode;
 
 	@JsonManagedReference(value = "client_balanceils")
 	@OneToMany( 
@@ -70,6 +72,10 @@ public class Client implements Serializable {
 	@JsonBackReference(value = "client_checkbookorder")
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
 	private Set<CheckBookOrder> checkBookOrder = new HashSet<>();
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
+	private List<ClientOperationsLog> log;
 
 	public Client() {
 		super();

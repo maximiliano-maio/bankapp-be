@@ -14,14 +14,17 @@ import io.mngt.repositories.StandingOrderRepository;
 
 @Component
 public class StandingOrderDaoImpl implements StandingOrderDao {
-  
-  @Autowired
-  private StandingOrderRepository standingOrderRepository;
 
   private static final String FIND_STANDING_ORDERS_BY_DATE = "SELECT so FROM StandingOrder so WHERE so.date = :date";
 
   @PersistenceContext
   private EntityManager em;
+
+  @Autowired
+  private StandingOrderRepository standingOrderRepository;
+
+  @Autowired
+  private ClientOperationsLogDao clientOperationsLogDao;
 
   @Override
   public void persist(StandingOrder standingOrder){
@@ -44,6 +47,15 @@ public class StandingOrderDaoImpl implements StandingOrderDao {
   @Override
   public StandingOrder save(StandingOrder standingOrder) {
     return standingOrderRepository.save(standingOrder);
+  }
+
+  @Override
+  public StandingOrder update(StandingOrder standingOrder) {
+
+    // TODO: Update Standing Order
+    //em.getTransaction().commit();
+    
+    return null;
   }
 
 }

@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -28,6 +31,8 @@ import io.mngt.repositories.LoanRepository;
 @Profile("default")
 public class ClientBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
+  @PersistenceContext
+  private EntityManager em;
   @Autowired
   private ClientRepository clientRepository;
   @Autowired
@@ -48,7 +53,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   }
 
   private void initSetClientData() {
-
+    
     clientRepository.deleteAll();
     checkBookOrderRepository.deleteAll();
     credentialRepository.deleteAll();
@@ -80,8 +85,10 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     bankAccount = new BankAccount(client, 100300, "disabled");
     bankAccountRepository.save(bankAccount);
 
+    setInitBankAccount(client);
     setBalances(client);
     setLoans(client);
+
 
     // Client 2:
     client = new Client("101032700", "Israel", "Israeli", "1");
@@ -103,6 +110,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     bankAccount = new BankAccount(client, 200300, "active");
     bankAccountRepository.save(bankAccount);
 
+    setInitBankAccount(client);
     setBalances(client);
     setLoans(client);
 
@@ -125,6 +133,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     bankAccount = new BankAccount(client, 300300, "disabled");
     bankAccountRepository.save(bankAccount);
 
+    setInitBankAccount(client);
     setBalances(client);
     setLoans(client);
 
@@ -147,6 +156,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     bankAccount = new BankAccount(client, 400300, "active");
     bankAccountRepository.save(bankAccount);
 
+    setInitBankAccount(client);
     setBalances(client);
     setLoans(client);
 
@@ -166,6 +176,8 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     bankAccount = new BankAccount(client, 999991, "active");
     bankAccountRepository.save(bankAccount);
 
+    setInitBankAccount(client);
+
   }
 
   private void setLoans(Client client) {
@@ -177,6 +189,21 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     loan = new Loan("Remodelation", 200000, 36, (float) 5.4);
     loan.setClient(client);
     loanRepository.save(loan);
+  }
+
+  private void setInitBankAccount(Client client) {
+    BalanceILS balance = new BalanceILS();
+    balance.setClient(client);
+
+    balance.setDebt(0);
+    balance.setCredit(0);
+
+    Date date = new GregorianCalendar(2010, Calendar.MARCH, 5).getTime();
+    balance.setDate(date);
+    balance.setDescription("קיום חשבון חדש");
+    balance.setBalance(0);
+
+    balanceILSRepository.save(balance);
   }
 
   private void setBalances(Client client) {

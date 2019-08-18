@@ -14,14 +14,18 @@ import io.mngt.repositories.BalanceILSRepository;
 
 @Component
 public class BalanceDaoImpl implements BalanceDao {
-
-  @Autowired
-  private BalanceILSRepository balanceILSRepository;
-
+  
   private static final String LAST_X_BALANCES_OF_CLIENT = "SELECT b FROM BalanceILS b WHERE b.client = :client ORDER BY b.id DESC";
   
   @PersistenceContext
   private EntityManager em;
+  
+  @Autowired
+  private ClientOperationsLogDao clientOperationsLogDao;
+
+  @Autowired
+  private BalanceILSRepository balanceILSRepository;
+
 
   @Override
   public void persist(BalanceILS balance) {

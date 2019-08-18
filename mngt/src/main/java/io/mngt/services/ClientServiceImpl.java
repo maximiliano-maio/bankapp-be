@@ -1,7 +1,5 @@
 package io.mngt.services;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +8,6 @@ import io.mngt.dao.ClientDao;
 import io.mngt.dao.ContactInfoDao;
 import io.mngt.entity.Client;
 import io.mngt.entity.ContactInfo;
-import io.mngt.exceptions.NotFoundException;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -28,19 +25,18 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public boolean deleteClient(Long id) {
-        Optional<Client> user = clientDao.findById(id);
-        if (!user.isPresent())
-            throw new NotFoundException("Client not found");
-        clientDao.delete(user.get());
+        Client client = clientDao.findById(id);
+        if (client == null) return false;
+        
+        clientDao.delete(client);
         return true;
     }
 
     @Override
-    public Client findClient(Long id) {
-        Optional<Client> user = clientDao.findById(id);
-        if (!user.isPresent())
-            return null;
-        return user.get();
+    public Client findClientById(Long id) {
+        Client client = clientDao.findById(id);
+        if (client == null) return null;
+        return client;
     }
 
     @Override
@@ -54,13 +50,22 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client getClient(Long id) {
-        Client client = new Client();
-        Optional<Client> optionalClient = clientDao.findById(id);
-        
-        if (!optionalClient.isPresent()) return null;
-        
+    public Client findByClientId(String clientId) {
+        Client client = clientDao.findByClientId(clientId);
+        if (client == null) return null;
+
         return client;
     }
+
+    @Override
+    public Client findClientAndCredentialAssociatedByClientId(String clientId) {
+        return clientDao.findClientAndCredentialAssociatedByClientId(clientId);
+    }
+
+    @Override
+    public void updateValidationCode(Client client, int validationCode) {
+        clientDao.updateValidationCode(client, validationCode);
+    }
+
     
 }

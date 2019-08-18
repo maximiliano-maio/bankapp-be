@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.mngt.entity.Transfer;
-import io.mngt.exceptions.NotFoundException;
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.StandingOrder;
 import io.mngt.entity.Transaction;
+import io.mngt.entity.Transfer;
+import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.AccountingService;
 import lombok.extern.slf4j.Slf4j;
 

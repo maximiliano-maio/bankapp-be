@@ -1,7 +1,7 @@
 package io.mngt.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +27,13 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
-
     @Autowired
     private CredentialService credentialService;
 
     @PostMapping
     @RequestMapping({ "/registerclient" })    
     public Client create(@RequestBody Client client) {
+        log.info("Client registration..");
         return clientService.setClient(client);
     }
 

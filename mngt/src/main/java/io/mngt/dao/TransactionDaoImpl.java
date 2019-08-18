@@ -14,14 +14,17 @@ import io.mngt.repositories.TransactionRepository;
 @Component
 public class TransactionDaoImpl implements TransactionDao {
 
-  @Autowired
-  private TransactionRepository transactionRepository;
-
   private static final String FIND_TRANSACTION_BY_STATUS = "SELECT t FROM Transaction t WHERE t.status = :status";
   private static final String FIND_TRANSACTION_BY_EXTERNAL_ACCOUNT = "SELECT t FROM Transaction t WHERE t.isAccountExternal = :isAccountExternal";
 
   @PersistenceContext
   private EntityManager em;
+
+  @Autowired
+  private ClientOperationsLogDao clientOperationsLogDao;
+
+  @Autowired
+  private TransactionRepository transactionRepository;
 
   @Override
   public void persist(TransactionDao transactionDao){

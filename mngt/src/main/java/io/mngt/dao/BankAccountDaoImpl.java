@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.mngt.entity.BankAccount;
@@ -14,11 +15,14 @@ import io.mngt.entity.Client;
 public class BankAccountDaoImpl implements BankAccountDao {
 
   private static final String FIND_BANK_ACCOUNT_BY_CLIENT = "SELECT b FROM BankAccount b WHERE b.client = :client";
-  private static final String FIND_BANK_ACCOUNT_BY_ACCOUNT_NUMBER= "SELECT b FROM BankAccount b JOIN FETCH b.client WHERE b.bankAccountNumber = :bankAccountNumber";
+  private static final String FIND_BANK_ACCOUNT_AND_CLIENT_ASSOCIATED_BY_ACCOUNT_NUMBER= "SELECT b FROM BankAccount b JOIN FETCH b.client WHERE b.bankAccountNumber = :bankAccountNumber";
 
   @PersistenceContext
   private EntityManager em;
-  
+
+  @Autowired
+  private ClientOperationsLogDao clientOperationsLogDao;
+
   @Override
   public void persist(BankAccount bankAccount) {
     em.persist(bankAccount);
@@ -34,7 +38,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
   @Override
   public BankAccount findBankAccountByAccountNumber(int bankAccountNumber){
    
-    List<BankAccount> bankAccountList = em.createQuery(FIND_BANK_ACCOUNT_BY_ACCOUNT_NUMBER, BankAccount.class)
+    List<BankAccount> bankAccountList = em.createQuery(FIND_BANK_ACCOUNT_AND_CLIENT_ASSOCIATED_BY_ACCOUNT_NUMBER, BankAccount.class)
     .setParameter("bankAccountNumber", bankAccountNumber)
     .getResultList();
 

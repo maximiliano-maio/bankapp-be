@@ -26,7 +26,7 @@ public class TransactionJob {
     log.info("Transaction batch job has finished");
   }
 
-  @Scheduled(cron = "0 0/1 * 1/1 * ?")
+  @Scheduled(cron = "0 0/40 * 1/1 * ?")
   public void buildOutgoingTransactionFile(){
     log.info("Building Outgoing transaction file...");
     accountingService.getOutgoingTransactions();
@@ -41,7 +41,7 @@ public class TransactionJob {
   }
 
 
-  /* @deprecated: Job implemented with Quartz dependency */
+  /* @deprecated: Job implemented with Spring Schedule */
   // @Override
   /* public void execute(JobExecutionContext arg0) throws JobExecutionException {
     log.info("Transaction batch job is running...");

@@ -7,4 +7,5 @@ public interface CredentialService {
   Boolean logout(int hashcode);
   int isAuthenticated(int hashcode);
   Credential findCredentialByHashcode(int hashcode);
+  int getValidationCode(String clientId);
 }
