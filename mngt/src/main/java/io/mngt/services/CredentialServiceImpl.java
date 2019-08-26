@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import io.mngt.business.ValidationCodeGenerator;
 import io.mngt.dao.ClientDao;
 import io.mngt.dao.CredentialDao;
+import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,6 +99,21 @@ public class CredentialServiceImpl implements CredentialService {
   @Override
   public int getValidationCode(String clientId) {
     return validationCodeGenerator.generateCode(4);
+  }
+
+  @Override
+  public boolean isValidationCodeCorrect(int validationCode, String clientId) {
+    Client client = clientDao.findByClientId(clientId);
+    if (client == null) return false;
+    
+    if(client.getValidationCode() != validationCode) return false;
+    
+    return true;
+  }
+
+  @Override
+  public Credential setCredential(Client client, String username, String password, String mail) {
+    return credentialDao.setCredential(client, username, password, mail);
   }
   
 }

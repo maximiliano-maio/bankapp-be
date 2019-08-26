@@ -53,7 +53,6 @@ public class StandingOrderDaoImpl implements StandingOrderDao {
   public StandingOrder update(StandingOrder standingOrder) {
 
     // TODO: Update Standing Order
-    //em.getTransaction().commit();
     
     return null;
   }

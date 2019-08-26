@@ -40,6 +40,12 @@ public class TransactionJob {
     log.info("Standing orders job has finished...");
   }
 
+  @Scheduled(cron = "0 0/10 * 1/1 ?")
+  public void setFirstAccount() {
+    // TODO: Set first account for new clients
+    // TODO: Set first movement about new account.
+  }
+
 
   /* @deprecated: Job implemented with Spring Schedule */
   // @Override

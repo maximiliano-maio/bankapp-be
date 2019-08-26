@@ -31,7 +31,6 @@ public class ContactInfoDaoImpl implements ContactInfoDao {
 
     // TODO: Update Contac Info
 
-    // em.getTransaction().commit();
     return null;
   }
 

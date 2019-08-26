@@ -4,13 +4,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.mngt.business.BankCommission;
 import io.mngt.dao.BalanceDao;
 import io.mngt.dao.BankAccountDao;
 import io.mngt.dao.StandingOrderDao;
@@ -22,6 +20,7 @@ import io.mngt.entity.Credential;
 import io.mngt.entity.StandingOrder;
 import io.mngt.entity.Transaction;
 import io.mngt.entity.Transfer;
+import io.mngt.repositories.EnvironmentRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -38,14 +37,11 @@ public class AccountingServiceImpl implements AccountingService {
   private TransactionDao transactionDao;
   @Autowired
   private StandingOrderDao standingOrderDao;
-  
-  // @Deprecated @Autowired private BankCommission bankCommission;
+  @Autowired
+  private EnvironmentRepository environmentRepository;
   @Autowired
   private Transaction transaction;
-
-  private static final int OUTGOING_BANK_ACCOUNT = 999991;
-  private static final int INCOMING_BANK_ACCOUNT = 999990;
-
+  
   @Transactional(readOnly = true)
   @Override
   public List<BalanceILS> findBalanceIlsListByHashcode(int hashcode) {
@@ -116,6 +112,7 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public void doTransaction(){
     List<Transaction> transactionList = transactionDao.findTransactionByStatus(0);
+    int OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());
     for (Transaction t : transactionList) {
       // ---- Debit ----
       Client clientDebitAccount = findClientByBankAccount(t.getDebitAccount());
@@ -125,6 +122,7 @@ public class AccountingServiceImpl implements AccountingService {
       // ---- Credit ----
       Client clientCreditAccount = findClientByBankAccount(t.getCreditAccount());
       if (clientCreditAccount == null) {
+        
         clientCreditAccount = findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
         t.setAccountExternal(true);
       } else {
@@ -167,9 +165,6 @@ public class AccountingServiceImpl implements AccountingService {
     debitBalance.setDescription(description);
     return balanceDao.save(debitBalance);
   }
-
-  
-  
 
   @Transactional(readOnly = true)
   @Override
@@ -249,7 +244,7 @@ public class AccountingServiceImpl implements AccountingService {
     List<StandingOrder> standingOrderList = standingOrderDao.findAllStandingOrdersByDate(today);
     
     if (standingOrderList != null) {
-
+      int INCOMING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("INCOMING_BANK_ACCOUNT").getValue());
       Date soDate = new Date();
 
       for (StandingOrder so : standingOrderList) {

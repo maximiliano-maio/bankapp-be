@@ -2,6 +2,7 @@ package io.mngt.entity;
 
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,7 +23,10 @@ public class Credential {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
+  
+  @Column(unique = true)
   private String username;
+  
   private String password;
   private String mail;
   private String role;
@@ -35,17 +39,25 @@ public class Credential {
   @JoinColumn(name = "client_id")
   private Client client;
 
-  public Credential(String username, String password, String mail, String role, Integer validity) {
+  public Credential() { }
+
+  public Credential(Client client, String username, String password, String mail) {
+    this.client = client;
+    this.username = username;
+    this.password = password;
+    this.mail = mail;
+    this.role = "user";
+    this.validity = 90;
+    this.status = 1;
+  }
+
+  public Credential(String username, String password, String mail, String role, int status) {
     this.username = username;
     this.password = password;
     this.mail = mail;
     this.role = role;
-    this.validity = validity;
-    this.status = 0;
-    
+    this.status = status;
   }
-
-  public Credential() { }
 
   @JsonIgnore
   public Client getClient() {

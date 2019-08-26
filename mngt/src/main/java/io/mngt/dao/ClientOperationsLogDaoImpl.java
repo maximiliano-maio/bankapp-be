@@ -23,7 +23,6 @@ public class ClientOperationsLogDaoImpl implements ClientOperationsLogDao {
 
     // TODO: Update logic
 
-    em.getTransaction().commit();
 
   }
 

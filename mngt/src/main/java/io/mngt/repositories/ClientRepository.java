@@ -6,8 +6,6 @@ import io.mngt.entity.Client;
 
 public interface ClientRepository extends CrudRepository<Client, Long> {
   Optional<Client> findByClientId (String clientId);
-  
-  Optional<Client> findClientById(Long id);
-
+  Optional<Client> findById(Long id);
     
 }

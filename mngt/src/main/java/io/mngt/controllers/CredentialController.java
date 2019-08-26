@@ -22,6 +22,7 @@ import io.mngt.entity.Credential;
 import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;
+import io.mngt.services.SmsService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,9 +32,11 @@ public class CredentialController {
 
   @Autowired
   private CredentialService credentialService;
-
   @Autowired
   private ClientService clientService;
+  @Autowired
+  private SmsService smsService;
+
 
   @PostMapping
   @RequestMapping("/login/user")
@@ -55,11 +58,39 @@ public class CredentialController {
 
   @PostMapping
   @RequestMapping("/sendValidationCode")
-  public void getValidationCode(@RequestBody Client client){
+  public void getValidationCode(@RequestBody Client client) throws IOException, NexmoClientException {
     int validationCode = credentialService.getValidationCode(client.getClientId());
     
     Client c = clientService.findClientAndCredentialAssociatedByClientId(client.getClientId());
     clientService.updateValidationCode(c, validationCode);
+    String cellphone = c.getContactInfo().getCellphone();
+    
+    smsService.sendValidationCode(cellphone, Integer.toString(validationCode));
+  }
+
+  @PostMapping
+  @RequestMapping("/validateCode")
+  public boolean validateValidationCode(@RequestBody Client data){
+    int validationCode = data.getValidationCode();
+    String clientId = data.getClientId();
+    boolean isValidated = credentialService.isValidationCodeCorrect(validationCode, clientId);
+    if(isValidated) {
+      Client client = clientService.findByClientId(clientId);
+      clientService.updateValidationCode(client, 0);
+    }
+
+    return isValidated;
+  }
+
+  @PostMapping
+  @RequestMapping("/setCredential")
+  public boolean setCredential(@RequestBody Credential data){
+    String clientId = data.getRole(); // Field 'role' used to transfer 'clientId' from client-side
+    Client client = clientService.findByClientId(clientId);
+    Credential credential = credentialService.setCredential(client, data.getUsername(), data.getPassword(), data.getMail());
+    if (credential == null) return false;
+
+    return true;
   }
   
   @ResponseStatus(HttpStatus.NOT_FOUND)

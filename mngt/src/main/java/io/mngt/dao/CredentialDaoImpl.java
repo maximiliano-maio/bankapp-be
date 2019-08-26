@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
 import io.mngt.repositories.CredentialRepository;
 
@@ -57,6 +58,12 @@ public class CredentialDaoImpl implements CredentialDao {
   @Override
   public Credential save(Credential credential) {
     return credentialRepository.save(credential);
+  }
+
+  @Override
+  public Credential setCredential(Client client, String username, String password, String mail) {
+    Credential credential = new Credential(client, username, password, mail);
+    return save(credential);
   }
 
 

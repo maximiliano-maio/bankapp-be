@@ -27,6 +27,21 @@ public class SmsServiceImpl implements SmsService {
   }
 
   @Override
+  public SmsSubmissionResponse sendValidationCode(String cellphone, String validationCode) throws IOException, NexmoClientException {
+    
+    String israeliNumber = "972";
+    israeliNumber = israeliNumber.concat(Integer.toString(Integer.parseInt(cellphone)));
+    NexmoClient client = new NexmoClient.Builder().apiKey("29253252").apiSecret("okVNhWcbJbaU8Nek").build();
+    TextMessage message = new TextMessage("Nexmo", israeliNumber, "קוד אימות:" + validationCode + "\n", true);
+    
+    SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
+    for (SmsSubmissionResponseMessage responseMessage : response.getMessages()) {
+      log.info("SMS Service: " + responseMessage.toString());
+    }
+    return response;
+  }
+
+  @Override
   public SmsSubmissionResponse sendSMS_Test() throws IOException, NexmoClientException {
     NexmoClient client = new NexmoClient.Builder().apiKey("29253252").apiSecret("okVNhWcbJbaU8Nek").build();
     TextMessage message = new TextMessage("Nexmo", "972515819763", "Hello from Nexmo");

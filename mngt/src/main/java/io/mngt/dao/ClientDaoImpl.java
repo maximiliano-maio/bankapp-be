@@ -91,8 +91,6 @@ public class ClientDaoImpl implements ClientDao {
       .executeUpdate();
     log.info("Updated rows on Update Validation Code: " + updatedRows);
 
-    em.getTransaction().commit();
-
   }
 
 
