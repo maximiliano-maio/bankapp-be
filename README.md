@@ -1,9 +1,11 @@
 Final project of Java course "Full stack development" at John Bryce College.
-A bank web application was developed using Spring Boot and Hibernate. The project is still in process..
 
-'til now there a few process that can be performed by user and others by the system, like:
-* Perform new client registration.
-* Authentication / Authorization process. Get client's personal account.
-* Receive SMS with validation code.
-* Set bank transfer. It's implemented by system through batch job.
-* Set standing order (make a regular fixed payment). It's implemented by system through batch job.
+Core-banking application that allows to conduct and record transactions made by bank’s customers to their account. 
+Include: 
+*Opening new accounts; 
+*Customer relationship management activities;
+*Processing cash deposits and withdrawals; 
+*Processing standing orders and create new ones;
+*Authentication process to get client's personal account;
+*SMS service for client's validation;
+*Maintaining records for all the bank’s transactions;
