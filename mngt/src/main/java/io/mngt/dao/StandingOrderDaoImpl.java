@@ -16,6 +16,7 @@ import io.mngt.repositories.StandingOrderRepository;
 public class StandingOrderDaoImpl implements StandingOrderDao {
 
   private static final String FIND_STANDING_ORDERS_BY_DATE = "SELECT so FROM StandingOrder so WHERE so.date = :date";
+  private static final String FIND_STANDING_ORDERS_BY_DATE_AND_STATUS = "SELECT so FROM StandingOrder so WHERE so.date = :date AND so.status = :status";
 
   @PersistenceContext
   private EntityManager em;
@@ -34,11 +35,9 @@ public class StandingOrderDaoImpl implements StandingOrderDao {
 
   @Override
   public List<StandingOrder> findAllStandingOrdersByDate(Date date){
-    
     List<StandingOrder> standingOrderList = em.createQuery(FIND_STANDING_ORDERS_BY_DATE, StandingOrder.class)
       .setParameter("date", date)
       .getResultList();
-
     if (standingOrderList.size() > 0) return standingOrderList;
 
     return null;
@@ -54,6 +53,18 @@ public class StandingOrderDaoImpl implements StandingOrderDao {
 
     // TODO: Update Standing Order
     
+    return null;
+  }
+
+  @Override
+  public List<StandingOrder> findAllStandingOrdersByDateAndStatus(Date date, int status) {
+    List<StandingOrder> standingOrderList = em.createQuery(FIND_STANDING_ORDERS_BY_DATE_AND_STATUS, StandingOrder.class)
+        .setParameter("date", date)
+        .setParameter("status", status)
+        .getResultList();
+    if (standingOrderList.size() > 0)
+      return standingOrderList;
+
     return null;
   }
 

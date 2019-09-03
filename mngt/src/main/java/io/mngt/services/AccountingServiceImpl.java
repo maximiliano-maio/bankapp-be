@@ -2,6 +2,7 @@ package io.mngt.services;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -230,44 +231,65 @@ public class AccountingServiceImpl implements AccountingService {
 
   @Override
   public void doStandingOrder() {
-    // TODO: Set next Standing Order once today's deduction is performed
+    Date today = getTodayDate();
+    List<StandingOrder> standingOrderList = standingOrderDao.findAllStandingOrdersByDateAndStatus(today, 0);
+    if (standingOrderList == null) return; 
     
+    int INCOMING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("INCOMING_BANK_ACCOUNT").getValue());
+    Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
+
+    for (StandingOrder so : standingOrderList) {
+      log.info("Id: " + so.getId() + ". Date: " + so.getDate());
+
+      debitAccount(so.getClient(), so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
+      creditAccount(bankAccount, so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
+      so.setStatus(1);
+      standingOrderDao.save(so);
+    }
+    
+  }
+
+  @Override
+  public void setNextStandingOrder() {
+    Date today = getTodayDate();
+    List<StandingOrder> standingOrderList = standingOrderDao.findAllStandingOrdersByDateAndStatus(today, 1);
+    if (standingOrderList == null) return;
+    Calendar calendar = Calendar.getInstance();
+    for(StandingOrder so : standingOrderList) {
+      calendar.setTime(so.getDate());
+
+      switch (so.getFrecuency()) {
+        case WEEKLY:
+          calendar.add(Calendar.DAY_OF_MONTH, 7);
+          so.setDate(calendar.getTime());
+          break;
+        case MONTHLY:
+          calendar.add(Calendar.MONTH, 1);
+          so.setDate(calendar.getTime());
+          break;
+        case YEARLY:
+          calendar.add(Calendar.YEAR, 1);
+          so.setDate(calendar.getTime());
+          break;
+        default:
+          break;
+      }
+      so.setStatus(0);
+      standingOrderDao.save(so);
+    }
+  }
+
+  static Date getTodayDate() {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     Date today = new Date();
-    
+
     try {
       today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    
-    List<StandingOrder> standingOrderList = standingOrderDao.findAllStandingOrdersByDate(today);
-    
-    if (standingOrderList != null) {
-      int INCOMING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("INCOMING_BANK_ACCOUNT").getValue());
-      Date soDate = new Date();
 
-      for (StandingOrder so : standingOrderList) {
-        log.info("Id: " + so.getId() + ". Date: " + so.getDate());
-        try {
-           soDate = simpleDateFormat.parse(simpleDateFormat.format(so.getDate()));
-        } catch (ParseException e) {
-          e.printStackTrace();
-        }
-        Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
-
-        if(soDate.equals(today)){
-          debitAccount(so.getClient(), so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
-          creditAccount(bankAccount, so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
-          so.setStatus(1);
-          
-        }
-        // TODO: If 'Standing Order' got performed, so set next Standing Order
-      }
-
-    }
-      
-    
+    return today;
   }
   
 

@@ -17,8 +17,7 @@ public class TransactionJob {
   // Each day at 20 hs (for PROD env.)
   // @Scheduled(cron="0 0 20 1/1 * ?")
   
-  // Each 2 minutes
-  @Scheduled(cron="0 0/1 * 1/1 * ?")
+  @Scheduled(cron="0 0/15 * 1/1 * ?")
   public void executeTransactions(){
     log.info("Transaction batch job is running...");
     accountingService.doTransaction();
@@ -37,24 +36,15 @@ public class TransactionJob {
   public void executeStandingOrders(){
     log.info("Standing orders job is running...");
     accountingService.doStandingOrder();
+    accountingService.setNextStandingOrder();
     log.info("Standing orders job has finished...");
   }
 
-  @Scheduled(cron = "0 0/10 * 1/1 ?")
+  @Scheduled(cron = "0 0/10 * 1/1 * ?")
   public void setFirstAccount() {
     // TODO: Set first account for new clients
     // TODO: Set first movement about new account.
   }
-
-
-  /* @deprecated: Job implemented with Spring Schedule */
-  // @Override
-  /* public void execute(JobExecutionContext arg0) throws JobExecutionException {
-    log.info("Transaction batch job is running...");
-    accountingService.doTransaction();
-
-    log.info("Transaction batch job has finished");
-  } */
 
   
 }

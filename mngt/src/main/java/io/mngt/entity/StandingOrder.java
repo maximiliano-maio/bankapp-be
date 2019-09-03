@@ -3,6 +3,8 @@ package io.mngt.entity;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,10 +32,11 @@ public class StandingOrder {
   private int amount;
   private String companyName;
   private Date date;
-  private String frecuency;
+  
+  @Enumerated(EnumType.STRING)
+  private StandingOrderFrecuency frecuency;
   private int status;
-  
-  
+  // When setting new Standing Order from client-side, a hashcode value is passed to search Client
   private String hashcode;
 
   

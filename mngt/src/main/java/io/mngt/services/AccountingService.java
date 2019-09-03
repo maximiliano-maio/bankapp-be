@@ -24,5 +24,6 @@ public interface AccountingService {
   void doStandingOrder();
   List<Transaction> getOutgoingTransactions();
   StandingOrder setStandingOrder(StandingOrder data);
+  void setNextStandingOrder();
 
 }

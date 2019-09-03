@@ -46,10 +46,8 @@ public class CredentialServiceImpl implements CredentialService {
       
       // Declare user has logged in
       credentialFromDB.setStatus(1);
-      
       credentialDao.save(credentialFromDB);
       
-      // Sending back only relevant fields:
       Credential returnedCredential = new Credential();
       returnedCredential.setUsername(credentialFromDB.getUsername());
       returnedCredential.setRole(credentialFromDB.getRole());
@@ -105,8 +103,7 @@ public class CredentialServiceImpl implements CredentialService {
   public boolean isValidationCodeCorrect(int validationCode, String clientId) {
     Client client = clientDao.findByClientId(clientId);
     if (client == null) return false;
-    
-    if(client.getValidationCode() != validationCode) return false;
+    if (client.getValidationCode() != validationCode) return false;
     
     return true;
   }
