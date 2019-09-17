@@ -23,7 +23,7 @@ public interface AccountingService {
   void doTransaction();
   void doStandingOrder();
   List<Transaction> getOutgoingTransactions();
-  StandingOrder setStandingOrder(StandingOrder data);
+  StandingOrder setStandingOrder(StandingOrder data, String hashcode);
   void setNextStandingOrder();
 
 }

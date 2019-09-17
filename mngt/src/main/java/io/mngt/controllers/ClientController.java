@@ -40,7 +40,7 @@ public class ClientController {
 
     @GetMapping
     @RequestMapping("/user")
-    public @ResponseBody Client getLocalAccountBalance(@RequestParam(name = "code") String hashcode) {
+    public @ResponseBody Client getClient(@RequestParam(name = "code") String hashcode) {
         Credential credential = credentialService.findCredentialByHashcode(Integer.parseInt(hashcode));
         if(credential ==  null) return null;
         

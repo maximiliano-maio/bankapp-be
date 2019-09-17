@@ -42,6 +42,8 @@ public class AccountingServiceImpl implements AccountingService {
   private EnvironmentRepository environmentRepository;
   @Autowired
   private Transaction transaction;
+  @Autowired
+  private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
   
   @Transactional(readOnly = true)
   @Override
@@ -204,8 +206,8 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   @Override
-  public StandingOrder setStandingOrder(StandingOrder data) {
-    int hashcode = Integer.parseInt(data.getHashcode());
+  public StandingOrder setStandingOrder(StandingOrder data, String hash) {
+    int hashcode = Integer.parseInt(hash);
     Client client = findClientByHashcode(hashcode);
 
     StandingOrder standingOrder = new StandingOrder();
@@ -213,7 +215,6 @@ public class AccountingServiceImpl implements AccountingService {
     standingOrder.setAmount(data.getAmount());
     standingOrder.setCompanyName(data.getCompanyName());
     
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     String dateString = simpleDateFormat.format(data.getDate());
     Date date;
     try {
@@ -280,7 +281,6 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   static Date getTodayDate() {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     Date today = new Date();
 
     try {

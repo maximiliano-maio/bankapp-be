@@ -17,7 +17,7 @@ import io.mngt.entity.Client;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
-public class ClientServiceIntegrationTest {
+public class ClientServiceTest {
 
   @TestConfiguration
   static class ClientServiceImplTestContextConfiguration{

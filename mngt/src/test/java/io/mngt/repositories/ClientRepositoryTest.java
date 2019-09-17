@@ -12,7 +12,7 @@ import io.mngt.entity.Client;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class ClientRepositoryIntegrationTest {
+public class ClientRepositoryTest {
 
   @Autowired
   ClientRepository clientRepository;
@@ -40,7 +40,7 @@ public class ClientRepositoryIntegrationTest {
     Client found = clientRepository.findByFirstName(maxi.getFirstName());
 
     // then
-    assertEquals("Client 'Maxi' is not found searching by firstName.", maxi, found);
+    assertEquals("Client 'Maxi' wasn't found searching by firstName.", maxi, found);
 
   }
   

@@ -63,8 +63,10 @@ public class AccountingController {
 
   @PostMapping
   @RequestMapping("/setStandingOrder")
-  public StandingOrder setStandingOrder(@RequestBody StandingOrder data) {
-    return accountingService.setStandingOrder(data);
+  public StandingOrder setStandingOrder(
+    @RequestBody StandingOrder data, 
+    @RequestParam(name = "code") String hashcode) {
+    return accountingService.setStandingOrder(data, hashcode);
   }
 
   @RequestMapping(value = "/outgoingTransactions", produces = MediaType.APPLICATION_XML_VALUE)

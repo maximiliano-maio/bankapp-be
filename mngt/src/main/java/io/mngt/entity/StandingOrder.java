@@ -36,8 +36,8 @@ public class StandingOrder {
   @Enumerated(EnumType.STRING)
   private StandingOrderFrecuency frecuency;
   private int status;
-  // When setting new Standing Order from client-side, a hashcode value is passed to search Client
-  private String hashcode;
+  // @Deprecated:  When setting new Standing Order from client-side, a hashcode value is passed to search Client
+  // private String hashcode;
 
   
 }

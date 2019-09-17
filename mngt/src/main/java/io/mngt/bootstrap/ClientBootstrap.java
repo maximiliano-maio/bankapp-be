@@ -62,7 +62,7 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
     checkBookOrderRepository.deleteAll();
 
     // Client 1:
-    Client client = new Client("338011321", "Maxi", "Maio", "1");
+    Client client = new Client("338016777", "Maxi", "Maio", "1");
 
     Credential credential = new Credential("maxi", "maio", "maxi_maio@hotmail.com", "admin", 90);
     credential.setClient(client);
