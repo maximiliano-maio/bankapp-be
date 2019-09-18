@@ -1,6 +1,21 @@
 package io.mngt.controllers;
 
-import org.hamcrest.core.Is;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +38,6 @@ import io.mngt.entity.Transfer;
 import io.mngt.services.AccountingService;
 import io.mngt.services.CredentialService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.core.Is.is;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -58,7 +58,7 @@ public class AccountingControllerIntegrationTest {
   private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
   @Test
-  public void givenHashcode_whenGettingShortAccountBalance_thenBalanceListResturned() throws Exception {
+  public void givenHashcode_whenGettingShortAccountBalance_thenBalanceListReturned() throws Exception {
     Credential maxiCredential = credentialService.login("maxi", "maio");
     String hashcode = Integer.toString(maxiCredential.getHashcode());
     MvcResult mvcResult =  this.mockMvc.perform(get("/getShortAccountBalances").param("code", hashcode))
@@ -81,7 +81,7 @@ public class AccountingControllerIntegrationTest {
   }
 
   @Test
-  public void givenHashcode_whenGettingShortAccountBalance_thenSize5Balances() throws Exception {
+  public void givenHashcode_whenGettingShortAccountBalance_thenBalanceListSize5IsReturned() throws Exception {
     Credential maxiCredential = credentialService.login("maxi", "maio");
     String hashcode = Integer.toString(maxiCredential.getHashcode());
     MvcResult mvcResult = this.mockMvc.perform(get("/getShortAccountBalances").param("code", hashcode))
@@ -95,7 +95,7 @@ public class AccountingControllerIntegrationTest {
 
 
   @Test
-  public void givenHashcode_whenGettingLongAccountBalance_thenBalanceListResturned() throws Exception {
+  public void givenHashcode_whenGettingLongAccountBalance_thenBalanceListReturned() throws Exception {
     Credential maxiCredential = credentialService.login("maxi", "maio");
     String hashcode = Integer.toString(maxiCredential.getHashcode());
     MvcResult mvcResult = this.mockMvc.perform(get("/getLongAccountBalances").param("code", hashcode))
@@ -118,7 +118,7 @@ public class AccountingControllerIntegrationTest {
   }
 
   @Test
-  public void givenHashcode_whenGettingLongAccountBalance_thenSize11Balances() throws Exception {
+  public void givenHashcode_whenGettingLongAccountBalance_thenBalanceListSize11IsReturned() throws Exception {
     Credential maxiCredential = credentialService.login("maxi", "maio");
     String hashcode = Integer.toString(maxiCredential.getHashcode());
     MvcResult mvcResult = this.mockMvc.perform(get("/getLongAccountBalances").param("code", hashcode))

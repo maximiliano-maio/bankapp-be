@@ -3,6 +3,7 @@ package io.mngt.controllers;
 import java.io.IOException;
 
 import com.nexmo.client.NexmoClientException;
+import com.nexmo.client.sms.SmsSubmissionResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,6 @@ public class CredentialController {
   @Autowired
   private SmsService smsService;
 
-
   @PostMapping
   @RequestMapping("/login/user")
   public @ResponseBody Credential validateUser(@RequestBody Credential c) {
@@ -45,27 +45,26 @@ public class CredentialController {
   }
 
   @GetMapping("/auth/authState")
-  public @ResponseBody int authenticateUser(@RequestParam(name = "code") String hashcode) throws IOException, NexmoClientException{
-    
+  public @ResponseBody int authenticateUser(@RequestParam(name = "code") String hashcode)
+      throws IOException, NexmoClientException {
     return credentialService.isAuthenticated(Integer.parseInt(hashcode));
   }
 
   @GetMapping("/logout")
   public @ResponseBody boolean logout(@RequestParam(name = "code") String hashcode) {
-
     return credentialService.logout(Integer.parseInt(hashcode));
   }
 
   @PostMapping
   @RequestMapping("/sendValidationCode")
-  public void getValidationCode(@RequestBody Client client) throws IOException, NexmoClientException {
+  public SmsSubmissionResponse getValidationCode(@RequestBody Client client) throws IOException, NexmoClientException {
     int validationCode = credentialService.getValidationCode(client.getClientId());
     
     Client c = clientService.findClientAndCredentialAssociatedByClientId(client.getClientId());
     clientService.updateValidationCode(c, validationCode);
     String cellphone = c.getContactInfo().getCellphone();
     
-    smsService.sendValidationCode(cellphone, Integer.toString(validationCode));
+    return smsService.sendValidationCode(cellphone, Integer.toString(validationCode));
   }
 
   @PostMapping
