@@ -24,8 +24,6 @@ public class ClientDaoImpl implements ClientDao {
   @PersistenceContext
   private EntityManager em;
 
-  // @Autowired private SessionFactory sessionFactory;
-
   @Autowired
   private ClientRepository clientRepository;
 
@@ -43,6 +41,7 @@ public class ClientDaoImpl implements ClientDao {
 
   @Override
   public Client save(Client client) {
+    if (findByClientId(client.getClientId()) != null) return null;
     return clientRepository.save(client);
   }
 

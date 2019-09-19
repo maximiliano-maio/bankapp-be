@@ -23,6 +23,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
   @Autowired
   private ClientOperationsLogDao clientOperationsLogDao;
 
+  // TODO: Filter bankAccount by status (i.e. active, disabled)
   @Override
   public BankAccount findBankAccountByClient(Client client){
     return em.createQuery(FIND_BANK_ACCOUNT_BY_CLIENT, BankAccount.class)
