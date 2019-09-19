@@ -3,11 +3,11 @@ package io.mngt.dao;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import io.mngt.entity.ClientOperationsLog;
 
-@Component
+@Repository
 public class ClientOperationsLogDaoImpl implements ClientOperationsLogDao {
 
   @PersistenceContext

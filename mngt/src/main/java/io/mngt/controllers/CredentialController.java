@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.mngt.dao.CredentialDao;
 import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
 import io.mngt.exceptions.NotFoundException;
@@ -37,6 +38,8 @@ public class CredentialController {
   private ClientService clientService;
   @Autowired
   private SmsService smsService;
+  @Autowired
+  private CredentialDao credentialDao;
 
   @PostMapping
   @RequestMapping("/login/user")
@@ -57,7 +60,7 @@ public class CredentialController {
 
   @PostMapping
   @RequestMapping("/sendValidationCode")
-  public SmsSubmissionResponse getValidationCode(@RequestBody Client client) throws IOException, NexmoClientException {
+  public SmsSubmissionResponse sendValidationCode(@RequestBody Client client) throws IOException, NexmoClientException {
     int validationCode = credentialService.getValidationCode(client.getClientId());
     
     Client c = clientService.findClientAndCredentialAssociatedByClientId(client.getClientId());
@@ -86,6 +89,9 @@ public class CredentialController {
   public boolean setCredential(@RequestBody Credential data){
     String clientId = data.getRole(); // Field 'role' used to transfer 'clientId' from client-side
     Client client = clientService.findByClientId(clientId);
+    if( credentialDao.findByUsername(data.getUsername()) != null ) 
+      return false;
+    
     Credential credential = credentialService.setCredential(client, data.getUsername(), data.getPassword(), data.getMail());
     if (credential == null) return false;
 

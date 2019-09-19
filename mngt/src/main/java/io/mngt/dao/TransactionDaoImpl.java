@@ -6,12 +6,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import io.mngt.entity.Transaction;
 import io.mngt.repositories.TransactionRepository;
 
-@Component
+@Repository
 public class TransactionDaoImpl implements TransactionDao {
 
   private static final String FIND_TRANSACTION_BY_STATUS = "SELECT t FROM Transaction t WHERE t.status = :status";

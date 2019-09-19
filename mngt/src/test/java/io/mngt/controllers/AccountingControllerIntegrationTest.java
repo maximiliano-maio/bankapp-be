@@ -35,7 +35,6 @@ import io.mngt.entity.Credential;
 import io.mngt.entity.StandingOrder;
 import io.mngt.entity.StandingOrderFrecuency;
 import io.mngt.entity.Transfer;
-import io.mngt.services.AccountingService;
 import io.mngt.services.CredentialService;
 
 @RunWith(SpringRunner.class)
@@ -44,8 +43,6 @@ import io.mngt.services.CredentialService;
 @TestPropertySource(locations = "classpath:application-integrationtest.properties")
 public class AccountingControllerIntegrationTest {
 
-  @Autowired
-  private AccountingService accountingService;
   @Autowired
   private CredentialService credentialService;
   @Autowired

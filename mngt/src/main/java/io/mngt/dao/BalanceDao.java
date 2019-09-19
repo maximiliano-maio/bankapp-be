@@ -12,5 +12,6 @@ public interface BalanceDao {
   BalanceILS save(BalanceILS balanceILS);
 
   List<BalanceILS> findLastBalancesByClient(Client c, int x);
+  BalanceILS findById(long id);
 
 }

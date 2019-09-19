@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.mngt.entity.Client;
@@ -15,7 +15,7 @@ import io.mngt.repositories.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
+@Repository
 public class ClientDaoImpl implements ClientDao {
 
   private static final String FIND_CLIENT_BY_CLIENT_ID = "SELECT c FROM Client c WHERE c.clientId = :clientId";

@@ -65,7 +65,7 @@ public class ClientControllerIntegrationTest {
     String clientFirstName = objectMapper.readValue(
       mvcResult.getResponse().getContentAsString(), 
       Client.class).getFirstName();
-    assertEquals(clientFirstName, "Maxi");
+    assertEquals(clientFirstName, "Maximiliano");
   }
 
   

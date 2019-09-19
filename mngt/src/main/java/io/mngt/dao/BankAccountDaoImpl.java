@@ -6,12 +6,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import io.mngt.entity.BankAccount;
 import io.mngt.entity.Client;
 
-@Component
+@Repository
 public class BankAccountDaoImpl implements BankAccountDao {
 
   private static final String FIND_BANK_ACCOUNT_BY_CLIENT = "SELECT b FROM BankAccount b WHERE b.client = :client";

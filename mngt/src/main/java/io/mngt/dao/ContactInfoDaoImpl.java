@@ -4,12 +4,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import io.mngt.entity.ContactInfo;
 import io.mngt.repositories.ContactInfoRepository;
 
-@Component
+@Repository
 public class ContactInfoDaoImpl implements ContactInfoDao {
 
   @PersistenceContext

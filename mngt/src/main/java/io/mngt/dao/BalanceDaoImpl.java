@@ -1,18 +1,19 @@
 package io.mngt.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.Client;
 import io.mngt.repositories.BalanceILSRepository;
 
-@Component
+@Repository
 public class BalanceDaoImpl implements BalanceDao {
   
   private static final String LAST_X_BALANCES_OF_CLIENT = "SELECT b FROM BalanceILS b WHERE b.client = :client ORDER BY b.id DESC";
@@ -48,6 +49,14 @@ public class BalanceDaoImpl implements BalanceDao {
   @Override
   public BalanceILS save(BalanceILS balanceILS) {
     return balanceILSRepository.save(balanceILS);
+  }
+
+  @Override
+  public BalanceILS findById(long id) {
+    Optional<BalanceILS> balance = balanceILSRepository.findById(id);
+    if (balance.isPresent()) return balance.get();
+
+    return null;
   }
   
 }

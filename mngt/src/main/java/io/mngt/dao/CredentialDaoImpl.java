@@ -6,13 +6,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
 import io.mngt.repositories.CredentialRepository;
 
-@Component
+@Repository
 public class CredentialDaoImpl implements CredentialDao {
 
   @PersistenceContext
