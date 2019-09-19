@@ -5,7 +5,6 @@ import io.mngt.entity.Client;
 
 public interface BankAccountDao {
 
-  void persist(BankAccount bankAccount);
   BankAccount findBankAccountByClient(Client client);
   BankAccount findBankAccountByAccountNumber(int bankAccountNumber);
 

@@ -8,11 +8,13 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.Client;
 import io.mngt.repositories.BalanceILSRepository;
 
+@Transactional
 @Repository
 public class BalanceDaoImpl implements BalanceDao {
   
@@ -26,12 +28,6 @@ public class BalanceDaoImpl implements BalanceDao {
 
   @Autowired
   private BalanceILSRepository balanceILSRepository;
-
-
-  @Override
-  public void persist(BalanceILS balance) {
-    em.persist(balance);
-  }
 
   @Override
   public List<BalanceILS> findLastBalancesByClient(Client c, int x) {

@@ -24,10 +24,6 @@ public class CredentialDaoImpl implements CredentialDao {
   @Autowired
   private CredentialRepository credentialRepository;
   
-  public void persist(Credential credential) {
-    em.persist(credential);
-  }
-
   @Override
   public Credential findByUsername(String username) {
     Optional<Credential> credential = credentialRepository.findByUsername(username);

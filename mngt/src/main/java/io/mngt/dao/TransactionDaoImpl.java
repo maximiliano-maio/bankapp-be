@@ -27,11 +27,6 @@ public class TransactionDaoImpl implements TransactionDao {
   private TransactionRepository transactionRepository;
 
   @Override
-  public void persist(TransactionDao transactionDao){
-    em.persist(transactionDao);
-  }
-
-  @Override
   public List<Transaction> findTransactionByStatus(int status){
    return em.createQuery(FIND_TRANSACTION_BY_STATUS, Transaction.class).setParameter("status", status)
           .getResultList();

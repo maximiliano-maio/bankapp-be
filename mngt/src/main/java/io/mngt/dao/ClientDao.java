@@ -4,7 +4,6 @@ import io.mngt.entity.Client;
 
 public interface ClientDao {
   
-  void persist(Client client);
   Client findByClientId(String clientId);
   Client save(Client client);
   Client findById(Long id);

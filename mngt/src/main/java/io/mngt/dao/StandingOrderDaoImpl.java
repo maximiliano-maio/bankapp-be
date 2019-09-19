@@ -28,12 +28,6 @@ public class StandingOrderDaoImpl implements StandingOrderDao {
   private ClientOperationsLogDao clientOperationsLogDao;
 
   @Override
-  public void persist(StandingOrder standingOrder){
-    em.persist(standingOrder);
-  }
-  
-
-  @Override
   public List<StandingOrder> findAllStandingOrdersByDate(Date date){
     List<StandingOrder> standingOrderList = em.createQuery(FIND_STANDING_ORDERS_BY_DATE, StandingOrder.class)
       .setParameter("date", date)

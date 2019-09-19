@@ -4,7 +4,6 @@ import io.mngt.entity.ClientOperationsLog;
 
 public interface ClientOperationsLogDao {
 
-  void persistLog(ClientOperationsLog clientOperationsLog);
   void updateLog(ClientOperationsLog clientOperationsLog);
   
 }

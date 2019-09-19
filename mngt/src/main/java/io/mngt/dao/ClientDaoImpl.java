@@ -33,11 +33,6 @@ public class ClientDaoImpl implements ClientDao {
   private ClientOperationsLogDao clientOperationsLogDao;
 
   @Override
-  public void persist(Client client) {
-    em.persist(client);
-  }
-
-  @Override
   public Client findByClientId(String clientId) {
     Optional<Client> c = clientRepository.findByClientId(clientId);
     if (c.isPresent()) 

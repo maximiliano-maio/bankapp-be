@@ -24,11 +24,6 @@ public class BankAccountDaoImpl implements BankAccountDao {
   private ClientOperationsLogDao clientOperationsLogDao;
 
   @Override
-  public void persist(BankAccount bankAccount) {
-    em.persist(bankAccount);
-  }
-
-  @Override
   public BankAccount findBankAccountByClient(Client client){
     return em.createQuery(FIND_BANK_ACCOUNT_BY_CLIENT, BankAccount.class)
       .setParameter("client", client)

@@ -14,11 +14,6 @@ public class ClientOperationsLogDaoImpl implements ClientOperationsLogDao {
   private EntityManager em;
 
   @Override
-  public void persistLog(ClientOperationsLog clientOperationsLog){
-    em.persist(clientOperationsLog);
-  }
-
-  @Override
   public void updateLog(ClientOperationsLog clientOperationsLog) {
 
     // TODO: Update logic
