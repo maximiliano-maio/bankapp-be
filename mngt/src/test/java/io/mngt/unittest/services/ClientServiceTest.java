@@ -1,4 +1,4 @@
-package io.mngt.services;
+package io.mngt.unittest.services;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.mngt.dao.ClientDao;
 import io.mngt.dao.ContactInfoDao;
 import io.mngt.entity.Client;
+import io.mngt.services.ClientService;
+import io.mngt.services.ClientServiceImpl;
 
 import static org.assertj.core.api.Assertions.*;
 

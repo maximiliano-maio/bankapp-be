@@ -24,24 +24,10 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean deleteClient(Long id) {
-        Client client = clientDao.findById(id);
-        if (client == null) return false;
-        
-        clientDao.delete(client);
-        return true;
-    }
-
-    @Override
     public Client findClientById(Long id) {
         Client client = clientDao.findById(id);
         if (client == null) return null;
         return client;
-    }
-
-    @Override
-    public Iterable<Client> findAll() {
-        return clientDao.findAll();
     }
 
     @Override

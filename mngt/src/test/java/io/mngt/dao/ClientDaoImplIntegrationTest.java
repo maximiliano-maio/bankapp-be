@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.*;
+
+import io.mngt.business.ValidationCodeGenerator;
 import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
 import io.mngt.services.CredentialService;
@@ -23,6 +25,8 @@ public class ClientDaoImplIntegrationTest {
   private ClientDao clientDao;
   @Autowired
   private CredentialService credentialService;
+  @Autowired
+  private ValidationCodeGenerator validationCodeGenerator;
 
   @Test
   public void givenClientId_whenFindByClientId_thenReturnClient(){
@@ -75,6 +79,18 @@ public class ClientDaoImplIntegrationTest {
     String clientId = "777";
     Client client = clientDao.findClientAndCredentialAssociatedByClientId(clientId);
     assertThat(client).isNull();
+  }
+
+  @Test
+  public void givenClientandValidationCode_whenUpdateValidationCode_thenValidationCodeStored(){
+    Credential credential = credentialService.login("maxi", "maio");
+    Client client = credentialService.findCredentialByHashcode(credential.getHashcode()).getClient();
+    int validationCode = validationCodeGenerator.generateCode(4);
+
+    clientDao.updateValidationCode(client, validationCode);
+    client = credentialService.findCredentialByHashcode(credential.getHashcode()).getClient();
+
+    assertThat(client.getValidationCode()).isEqualTo(validationCode);
   }
 
 }

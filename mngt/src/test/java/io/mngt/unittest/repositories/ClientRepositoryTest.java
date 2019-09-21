@@ -1,4 +1,4 @@
-package io.mngt.repositories;
+package io.mngt.unittest.repositories;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.mngt.entity.Client;
+import io.mngt.repositories.ClientRepository;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

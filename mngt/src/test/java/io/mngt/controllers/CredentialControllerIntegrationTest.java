@@ -120,7 +120,7 @@ public class CredentialControllerIntegrationTest {
 
   @Test
   public void givenNewClient_whenSendValidationCode_thenValidationCodeReceivedBySMS() throws Exception {
-    Client newClient = new Client("1234567", "test", "test", "0");
+    Client newClient = new Client("123456", "test", "test", "0");
     ContactInfo clientContactInfo = new ContactInfo();
     clientContactInfo.setCellphone("0515819763");
     newClient.setContactInfo(clientContactInfo);

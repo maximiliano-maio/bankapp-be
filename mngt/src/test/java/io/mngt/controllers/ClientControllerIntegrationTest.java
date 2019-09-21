@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +25,9 @@ import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
 import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -43,14 +46,14 @@ public class ClientControllerIntegrationTest {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Rollback(value = true)
   @Test
   public void givenClient_whenCreate_thenClientIsReturned() throws Exception {
-    Client maxi = new Client("338000777", "Maximiliano", "Maio", "1");
-    maxi.setId(1L);
+    Client maxi = new Client("338100877", "Maximiliano", "Maio", "1");
+    maxi.setId(100L);
     byte[] content = objectMapper.writeValueAsBytes(maxi);
-    clientService.setClient(maxi);
-    this.mockMvc.perform(
-      post("/registerclient").contentType(MediaType.APPLICATION_JSON).content(content))
+    this.mockMvc.perform(post("/registerclient")
+        .contentType(MediaType.APPLICATION_JSON).content(content))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.firstName", is(maxi.getFirstName())));
   }

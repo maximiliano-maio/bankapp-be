@@ -55,16 +55,6 @@ public class ClientDaoImpl implements ClientDao {
   }
 
   @Override
-  public void delete(Client client) {
-    clientRepository.delete(client);
-  }
-
-  @Override
-  public Iterable<Client> findAll() {
-	  return clientRepository.findAll();
-  }
-
-  @Override
   public Client findClientAndCredentialAssociatedByClientId(String clientId) {
     List<Client> clientList = em.createQuery(FIND_CLIENT_BY_CLIENT_ID, Client.class)
       .setParameter("clientId", clientId)
@@ -78,7 +68,6 @@ public class ClientDaoImpl implements ClientDao {
   @Override
   @Transactional
   public void updateValidationCode(Client client, int validationCode) {
-
     int updatedRows = em.createQuery(UPDATE_VALIDATION_CODE)
       .setParameter("validationCode", validationCode)
       .setParameter("clientId", client.getClientId())
@@ -87,7 +76,4 @@ public class ClientDaoImpl implements ClientDao {
 
   }
 
-
-  
-  
 }

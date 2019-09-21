@@ -1,4 +1,4 @@
-package io.mngt.controllers;
+package io.mngt.unittest.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import io.mngt.controllers.ClientController;
 import io.mngt.entity.Client;
 import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;

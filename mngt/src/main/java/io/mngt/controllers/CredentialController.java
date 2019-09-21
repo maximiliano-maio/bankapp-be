@@ -89,8 +89,7 @@ public class CredentialController {
   public boolean setCredential(@RequestBody Credential data){
     String clientId = data.getRole(); // Field 'role' used to transfer 'clientId' from client-side
     Client client = clientService.findByClientId(clientId);
-    if( credentialDao.findByUsername(data.getUsername()) != null ) 
-      return false;
+    if( credentialDao.findByUsername(data.getUsername()) != null ) return false;
     
     Credential credential = credentialService.setCredential(client, data.getUsername(), data.getPassword(), data.getMail());
     if (credential == null) return false;
