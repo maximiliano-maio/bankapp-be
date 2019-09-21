@@ -25,5 +25,7 @@ public interface AccountingService {
   List<Transaction> getOutgoingTransactions();
   StandingOrder setStandingOrder(StandingOrder data, String hashcode);
   void setNextStandingOrder();
+  BalanceILS debitAccount(Client client, int amount, String description);
+  BalanceILS creditAccount(Client client, int amount, String description);
 
 }

@@ -23,11 +23,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
-import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -36,13 +33,8 @@ public class ClientControllerIntegrationTest {
 
   @Autowired
   private MockMvc mockMvc;
-
-  @Autowired
-  private ClientService clientService;
-
   @Autowired 
   private CredentialService credentialService;
-
   @Autowired
   private ObjectMapper objectMapper;
 

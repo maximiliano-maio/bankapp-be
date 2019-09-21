@@ -125,7 +125,6 @@ public class AccountingServiceImpl implements AccountingService {
       // ---- Credit ----
       Client clientCreditAccount = findClientByBankAccount(t.getCreditAccount());
       if (clientCreditAccount == null) {
-        
         clientCreditAccount = findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
         t.setAccountExternal(true);
       } else {
@@ -142,7 +141,8 @@ public class AccountingServiceImpl implements AccountingService {
     
   }
 
-  private BalanceILS creditAccount(Client client, int amount, String description) {
+  @Override
+  public BalanceILS creditAccount(Client client, int amount, String description) {
     
     BalanceILS lastBalance = findLastBalanceByClient(client);
     
@@ -156,7 +156,8 @@ public class AccountingServiceImpl implements AccountingService {
     return balanceDao.save(creditBalance);
   }
 
-  private BalanceILS debitAccount(Client client, int amount, String description) {
+  @Override
+  public BalanceILS debitAccount(Client client, int amount, String description) {
     BalanceILS lastBalance = findLastBalanceByClient(client);
 
     BalanceILS debitBalance = new BalanceILS();
