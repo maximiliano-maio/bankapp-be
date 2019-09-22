@@ -1,5 +1,8 @@
 package io.mngt.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -10,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.isNotNull;
 
+import io.mngt.dao.StandingOrderDaoImpl;
 import io.mngt.dao.TransactionDao;
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
+import io.mngt.entity.StandingOrder;
+import io.mngt.entity.StandingOrderFrecuency;
 import io.mngt.entity.Transaction;
 import io.mngt.entity.Transfer;
+import io.mngt.repositories.EnvironmentRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
@@ -31,11 +39,15 @@ import io.mngt.entity.Transfer;
 public class AccountServiceImplIntegrationTest {
 
   @TestConfiguration
-  static class AccountingServiceImplTestContextConfiguration {
+  static class TestContextConfiguration {
 
     @Bean
     public AccountingService accountingService() {
       return new AccountingServiceImpl();
+    }
+    @Bean
+    public SimpleDateFormat simpleDateFormat(){
+      return new SimpleDateFormat("yyyy-MM-dd");
     }
   }
 
@@ -45,6 +57,12 @@ public class AccountServiceImplIntegrationTest {
   private CredentialService credentialService;
   @Autowired
   private TransactionDao transactionDao;
+  @Autowired
+  private SimpleDateFormat simpleDateFormat;
+  @Autowired
+  private EnvironmentRepository environmentRepository;
+  @Autowired
+  private StandingOrderDaoImpl standingOrderDaoImpl;
 
   @Test
   public void givenHashcode_whenFindBalanceIlsListByHashcode_thenReturnBalanceILSList(){
@@ -154,19 +172,91 @@ public class AccountServiceImplIntegrationTest {
     assertThat(client).isNull();
   }
 
+  @Rollback
+  @Transactional
   @Test
   public void whenDoTransaction_thenUpdateTransaction(){
-    // TODO: Write test 
+    Transfer data = new Transfer();
+    Credential credential = credentialService.login("maxi", "maio");
+    data.setHashcode(Integer.toString(credential.getHashcode()));
+    data.setAmount(100);
+    data.setAccountNumber(200200);
+    data.setBeneficiary("ישראל ישראלי");
+    data.setReason(1);
+
+    accountingService.setTransaction(data);
+    accountingService.doTransaction();
+    List<Transaction> list = transactionDao.findTransactionByStatus(1);
+    assertThat(list).hasSize(1);
   }
 
+  @Rollback
+  @Transactional
   @Test
   public void whenDoTransaction_thenDebitBalance() {
-    // TODO: Write test
+    Transfer data = new Transfer();
+    Credential credential = credentialService.login("maxi", "maio");
+    credential = credentialService.findCredentialByHashcode(credential.getHashcode());
+
+    data.setHashcode(Integer.toString(credential.getHashcode()));
+    data.setAmount(100);
+    data.setAccountNumber(200200);
+    data.setBeneficiary("ישראל ישראלי");
+    data.setReason(1);
+    int bankCommission = 20;
+    BalanceILS balanceBeforeTransaction = accountingService.findLastBalanceByClient(credential.getClient());
+
+    accountingService.setTransaction(data);
+    accountingService.doTransaction();
+    BalanceILS balanceAfterTransaction = accountingService.findLastBalanceByClient(credential.getClient());
+    assertThat(balanceAfterTransaction.getBalance())
+      .isEqualTo(balanceBeforeTransaction.getBalance() - data.getAmount() - bankCommission);
   }
 
+  @Rollback
+  @Transactional
   @Test
   public void whenDoTransaction_thenCreditBalance() {
-    // TODO: Write test
+    Transfer data = new Transfer();
+    Credential credential = credentialService.login("maxi", "maio");
+
+    data.setHashcode(Integer.toString(credential.getHashcode()));
+    data.setAmount(100);
+    data.setAccountNumber(200200);
+    data.setBeneficiary("ישראל ישראלי");
+    data.setReason(1);
+    Client creditAccountClient = accountingService.findClientByBankAccount(data.getAccountNumber());
+    BalanceILS balanceBeforeTransaction = accountingService.findLastBalanceByClient(creditAccountClient);
+
+    accountingService.setTransaction(data);
+    accountingService.doTransaction();
+    BalanceILS balanceAfterTransaction = accountingService.findLastBalanceByClient(creditAccountClient);
+    assertThat(balanceAfterTransaction.getBalance())
+        .isEqualTo(balanceBeforeTransaction.getBalance() + data.getAmount());
+  }
+
+  @Rollback
+  @Transactional
+  @Test
+  public void whenDoTransaction_thenCreditBalanceBankAccount() {
+    Transfer data = new Transfer();
+    Credential credential = credentialService.login("maxi", "maio");
+
+    data.setHashcode(Integer.toString(credential.getHashcode()));
+    data.setAmount(100);
+    data.setAccountNumber(200200);
+    data.setBeneficiary("ישראל ישראלי");
+    data.setReason(1);
+    int bankCommission = 20;
+    int OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());
+    Client bankCreditAccount = accountingService.findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
+    BalanceILS balanceBeforeTransaction = accountingService.findLastBalanceByClient(bankCreditAccount);
+
+    accountingService.setTransaction(data);
+    accountingService.doTransaction();
+    BalanceILS balanceAfterTransaction = accountingService.findLastBalanceByClient(bankCreditAccount);
+    assertThat(balanceAfterTransaction.getBalance())
+        .isEqualTo(balanceBeforeTransaction.getBalance() + bankCommission );
   }
 
   @Transactional
@@ -181,29 +271,118 @@ public class AccountServiceImplIntegrationTest {
     assertThat(list).hasSize(1); 
   }
 
+  @Rollback
   @Test
-  public void givenStandingOrderAndHashcode_whenSetStandingOrder_thenReturnStandingOrder(){
-    // TODO: Write test
+  public void givenStandingOrderAndHashcode_whenSetStandingOrder_thenReturnStandingOrder() throws Exception {
+    Credential credential = credentialService.login("maxi", "maio");
+    credential = credentialService.findCredentialByHashcode(credential.getHashcode());
+    StandingOrder standingOrder = new StandingOrder();
+    standingOrder.setClient(credential.getClient());
+    standingOrder.setAmount(100);
+    standingOrder.setCompanyName("CompanyIntegrationTest");
+    standingOrder.setDate(simpleDateFormat.parse(simpleDateFormat.format(new Date())));
+
+    StandingOrder standingOrderStored = accountingService.setStandingOrder(standingOrder, Integer.toString(credential.getHashcode()));
+    assertThat(standingOrderStored.getAmount()).isEqualTo(100);
   }
 
+  @Rollback
+  @Transactional
   @Test
-  public void whenDoStandingOrder_thenDebitAccount(){
-    // TODO: Write test
+  public void whenDoStandingOrder_thenDebitAccount() throws Exception {
+    Credential credential = credentialService.login("maxi", "maio");
+    credential = credentialService.findCredentialByHashcode(credential.getHashcode());
+    StandingOrder standingOrder = new StandingOrder();
+    standingOrder.setClient(credential.getClient());
+    standingOrder.setAmount(100);
+    standingOrder.setCompanyName("CompanyIntegrationTest");
+    standingOrder.setDate(simpleDateFormat.parse(simpleDateFormat.format(new Date())));
+    standingOrder.setStatus(0);
+    accountingService.setStandingOrder(standingOrder, Integer.toString(credential.getHashcode()));
+    BalanceILS lastBalanceBeforeStandingOrder = accountingService.findLastBalanceByClient(credential.getClient());
+    accountingService.doStandingOrder();
+
+    BalanceILS lastBalance = accountingService.findLastBalanceByClient(credential.getClient());
+    assertThat(lastBalance.getBalance())
+      .isEqualTo(lastBalanceBeforeStandingOrder.getBalance() - standingOrder.getAmount());
   }
 
+  @Rollback
+  @Transactional
   @Test
-  public void whenDoStandingOrder_thenCreditAccount() {
-    // TODO: Write test
+  public void whenDoStandingOrder_thenCreditAccount() throws Exception {
+    Credential credential = credentialService.login("maxi", "maio");
+    credential = credentialService.findCredentialByHashcode(credential.getHashcode());
+    StandingOrder standingOrder = new StandingOrder();
+    standingOrder.setClient(credential.getClient());
+    standingOrder.setAmount(100);
+    standingOrder.setCompanyName("CompanyIntegrationTest");
+    standingOrder.setDate(simpleDateFormat.parse(simpleDateFormat.format(new Date())));
+    standingOrder.setStatus(0);
+    accountingService.setStandingOrder(standingOrder, Integer.toString(credential.getHashcode()));
+    
+    int OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());
+    Client bankCreditAccount = accountingService.findClientByBankAccount(OUTGOING_BANK_ACCOUNT);
+    BalanceILS lastBalanceBeforeStandingOrder = accountingService
+      .findLastBalanceByClient(bankCreditAccount);
+    
+    accountingService.doStandingOrder();
+
+    BalanceILS lastBalance = accountingService.findLastBalanceByClient(bankCreditAccount);
+    assertThat(lastBalance.getBalance())
+        .isEqualTo(lastBalanceBeforeStandingOrder.getBalance() + standingOrder.getAmount());
   }
 
+  @Rollback
+  @Transactional
   @Test
-  public void whenDoStandingOrder_thenUpdateStandingOrder() {
-    // TODO: Write test
+  public void whenDoStandingOrder_thenUpdateStandingOrder() throws Exception {
+    Credential credential = credentialService.login("maxi", "maio");
+    credential = credentialService.findCredentialByHashcode(credential.getHashcode());
+    Date today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+
+    StandingOrder standingOrder = new StandingOrder();
+    standingOrder.setClient(credential.getClient());
+    standingOrder.setAmount(100);
+    standingOrder.setCompanyName("CompanyIntegrationTest");
+    standingOrder.setDate(today);
+    standingOrder.setStatus(0);
+    accountingService.setStandingOrder(standingOrder, Integer.toString(credential.getHashcode()));
+
+    accountingService.doStandingOrder();
+
+    StandingOrder standingOrderUpdated = standingOrderDaoImpl.findAllStandingOrdersByDate(today).get(0);
+    assertThat(standingOrderUpdated.getStatus()).isEqualTo(1);
+
   }
 
+  @Rollback
+  @Transactional
   @Test
-  public void whenSetNextStandingOrder_thenCreateStandingOrder() {
-    // TODO: Write test
+  public void whenSetNextStandingOrder_thenCreateStandingOrder() throws Exception {
+    Credential credential = credentialService.login("maxi", "maio");
+    credential = credentialService.findCredentialByHashcode(credential.getHashcode());
+    Date today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+
+    StandingOrder standingOrder = new StandingOrder();
+    standingOrder.setClient(credential.getClient());
+    standingOrder.setAmount(100);
+    standingOrder.setCompanyName("CompanyIntegrationTest");
+    standingOrder.setDate(today);
+    standingOrder.setStatus(0);
+    standingOrder.setId(10L);
+    standingOrder.setFrecuency(StandingOrderFrecuency.WEEKLY);
+    accountingService.setStandingOrder(standingOrder, Integer.toString(credential.getHashcode()));
+
+    accountingService.doStandingOrder();
+    accountingService.setNextStandingOrder();
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(today);
+    calendar.add(Calendar.DAY_OF_MONTH, 7);
+    Date futureSODate = calendar.getTime();
+    
+    List<StandingOrder> list = standingOrderDaoImpl.findAllStandingOrdersByDate(futureSODate);
+    assertThat(list).hasSize(1);
   }
 
 }
