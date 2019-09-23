@@ -61,7 +61,7 @@ public class CredentialController {
   @PostMapping
   @RequestMapping("/sendValidationCode")
   public SmsSubmissionResponse sendValidationCode(@RequestBody Client client) throws IOException, NexmoClientException {
-    int validationCode = credentialService.getValidationCode(client.getClientId());
+    int validationCode = credentialService.getValidationCode();
     
     Client c = clientService.findClientAndCredentialAssociatedByClientId(client.getClientId());
     clientService.updateValidationCode(c, validationCode);

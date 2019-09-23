@@ -95,7 +95,7 @@ public class CredentialServiceImpl implements CredentialService {
   }
 
   @Override
-  public int getValidationCode(String clientId) {
+  public int getValidationCode() {
     return validationCodeGenerator.generateCode(4);
   }
 
