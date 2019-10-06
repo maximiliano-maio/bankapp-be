@@ -2,6 +2,8 @@ package io.mngt.controllers;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,11 +24,14 @@ import io.mngt.entity.Transaction;
 import io.mngt.entity.Transfer;
 import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.AccountingService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin("*")
 @RestController
+@Api(value = "Accounting", description = "Data service operations on accounting", tags = ("accounting, balance, standing order, transaction"))
 public class AccountingController {
 
   @Autowired
@@ -35,10 +40,10 @@ public class AccountingController {
   @GetMapping
   @RequestMapping("/getShortAccountBalances")
   @ResponseBody
-  public List<BalanceILS> getShortAccountBalancesILS(@RequestParam( name = "code") String hashcode) {
+  @ApiOperation(value = "Get brief balance", notes = "Get the last balances", nickname = "getShortBalance")
+  public List<BalanceILS> getShortAccountBalancesILS(@RequestParam(name = "code") String hashcode) {
     return accountingService.findLast5BalanceIlsListByHashcode(Integer.parseInt(hashcode));
   }
-  
 
   @GetMapping
   @RequestMapping("/getLongAccountBalances")
@@ -63,14 +68,19 @@ public class AccountingController {
 
   @PostMapping
   @RequestMapping("/setStandingOrder")
-  public StandingOrder setStandingOrder(
-    @RequestBody StandingOrder data, 
-    @RequestParam(name = "code") String hashcode) {
+  public StandingOrder setStandingOrder(@RequestBody StandingOrder data, @RequestParam(name = "code") String hashcode) {
     return accountingService.setStandingOrder(data, hashcode);
   }
 
-  @RequestMapping(value = "/outgoingTransactions", produces = MediaType.APPLICATION_XML_VALUE)
-  public List<Transaction> getOutgoungTransactionList() {
+  @GetMapping
+  @RequestMapping(value = "/outgoingTransactionsXMLFile", produces = MediaType.APPLICATION_XML_VALUE)
+  public String getOutgoungTransactionListXML() throws JsonProcessingException {
+    return accountingService.getOutgoingTransactions();
+  }
+
+  @GetMapping
+  @RequestMapping(value = "/outgoingTransactionsJSONFile", produces = MediaType.APPLICATION_JSON_VALUE)
+  public String getOutgoungTransactionListJSON() throws JsonProcessingException {
     return accountingService.getOutgoingTransactions();
   }
 

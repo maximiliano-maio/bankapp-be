@@ -6,10 +6,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.mngt.business.externaltransactions.TransactionXML;
 import io.mngt.dao.BalanceDao;
 import io.mngt.dao.BankAccountDao;
 import io.mngt.dao.StandingOrderDao;
@@ -28,6 +34,23 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AccountingServiceImpl implements AccountingService {
 
+  @Configuration
+  static class AccountingServiceConfig {
+    // @Bean("xml")
+    // public ObjectMapper objectMapperXML() {
+    //   JacksonXmlModule xmlModule = new JacksonXmlModule();
+    //   xmlModule.setDefaultUseWrapper(false);
+    //   ObjectMapper objectMapper = new XmlMapper(xmlModule);
+    //   objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    //   return objectMapper;
+    // }
+
+    @Bean
+    public TransactionXML transactionXML() {
+      return new TransactionXML();
+    }
+  }
+  
   @Autowired
   private CredentialService credentialService;
   @Autowired
@@ -44,12 +67,18 @@ public class AccountingServiceImpl implements AccountingService {
   private Transaction transaction;
   @Autowired
   private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-  
+  @Autowired
+  private ObjectMapper objectMapper;
+  @Autowired
+  private TransactionXML transactionFile;
+
+
   @Transactional(readOnly = true)
   @Override
   public List<BalanceILS> findBalanceIlsListByHashcode(int hashcode) {
     Client c = findClientByHashcode(hashcode);
-    if (c == null) return null;
+    if (c == null)
+      return null;
 
     return balanceDao.findLastBalancesByClient(c, 20);
   }
@@ -57,7 +86,8 @@ public class AccountingServiceImpl implements AccountingService {
   @Transactional(readOnly = true)
   public List<BalanceILS> findLast5BalanceIlsListByHashcode(int hashcode) {
     Client c = findClientByHashcode(hashcode);
-    if (c == null) return null;
+    if (c == null)
+      return null;
 
     return balanceDao.findLastBalancesByClient(c, 5);
   }
@@ -66,10 +96,12 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public Client findClientByHashcode(int hashcode) {
     Credential credential = credentialService.findCredentialByHashcode(hashcode);
-    if (credential == null) return null;
+    if (credential == null)
+      return null;
 
     Client client = credential.getClient();
-    if (client == null) return null;
+    if (client == null)
+      return null;
 
     return client;
   }
@@ -85,7 +117,8 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public BalanceILS findLastBalanceByClient(Client c) {
     List<BalanceILS> balanceIlsList = balanceDao.findLastBalancesByClient(c, 1);
-    if(balanceIlsList.size()>0) return balanceIlsList.get(0);
+    if (balanceIlsList.size() > 0)
+      return balanceIlsList.get(0);
 
     return null;
   }
@@ -99,7 +132,7 @@ public class AccountingServiceImpl implements AccountingService {
     Client c = findClientByHashcode(hashcode);
     BankAccount b = bankAccountDao.findBankAccountByClient(c);
     int debitAccount = b.getBankAccountNumber();
-    
+
     // Credit account
     int creditAccount = data.getAccountNumber();
 
@@ -113,7 +146,7 @@ public class AccountingServiceImpl implements AccountingService {
   }
 
   @Override
-  public void doTransaction(){
+  public void doTransaction() {
     List<Transaction> transactionList = transactionDao.findTransactionByStatus(0);
     int OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());
     for (Transaction t : transactionList) {
@@ -138,21 +171,21 @@ public class AccountingServiceImpl implements AccountingService {
       t.setStatus(1);
       transactionDao.save(t);
     }
-    
+
   }
 
   @Override
   public BalanceILS creditAccount(Client client, int amount, String description) {
-    
+
     BalanceILS lastBalance = findLastBalanceByClient(client);
-    
+
     BalanceILS creditBalance = new BalanceILS();
     creditBalance.setClient(client);
     creditBalance.setDebt(0);
     creditBalance.setDate(new Date());
     creditBalance.setCredit(amount);
     creditBalance.setDescription(description);
-    creditBalance.setBalance(lastBalance.getBalance() + amount );
+    creditBalance.setBalance(lastBalance.getBalance() + amount);
     return balanceDao.save(creditBalance);
   }
 
@@ -162,7 +195,7 @@ public class AccountingServiceImpl implements AccountingService {
 
     BalanceILS debitBalance = new BalanceILS();
     debitBalance.setClient(client);
-    debitBalance.setBalance(lastBalance.getBalance() - amount );
+    debitBalance.setBalance(lastBalance.getBalance() - amount);
     debitBalance.setCredit(0);
     debitBalance.setDate(new Date());
     debitBalance.setDebt(amount);
@@ -175,7 +208,7 @@ public class AccountingServiceImpl implements AccountingService {
   public Transfer isTransferPossible(Transfer data) {
     int hashcode = Integer.parseInt(data.getHashcode());
     BalanceILS lastBalanceILS = findLastBalanceByHashcode(hashcode);
-    
+
     Transfer returnedData = data;
     int balanceAvailable = lastBalanceILS.getBalance();
     // TODO: Get a better way to set commissions
@@ -195,16 +228,32 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public Client findClientByBankAccount(int bankAccountNumber) {
     BankAccount bankAccount = bankAccountDao.findBankAccountByAccountNumber(bankAccountNumber);
-    if (bankAccount == null) return null;
+    if (bankAccount == null)
+      return null;
 
     Client client = bankAccount.getClient();
     return client;
   }
 
   @Override
-  public List<Transaction> getOutgoingTransactions() {
-    return transactionDao.findTransactionByExternalAccount(true);
+  public String getOutgoingTransactions() throws JsonProcessingException {
+    String todayString = simpleDateFormat.format(getTodayDate());
+    List<Transaction> list = transactionDao.findTransactionByExternalAccount(true);
+    
+    transactionFile.setList(list);
+    transactionFile.setDate(todayString);
+    transactionFile.setFileName(todayString + "-transactions-" + list.size());
+    transactionFile.setTransactionQty(list.size());
+    
+    for (Transaction t : list) {
+      transactionFile.setTransactionTotalAmount(t.getAmount() + transactionFile.getTransactionTotalAmount());
+    }
+    
+    String xml = objectMapper.writeValueAsString(transactionFile);
+    return xml;
   }
+
+
 
   @Override
   public StandingOrder setStandingOrder(StandingOrder data, String hash) {

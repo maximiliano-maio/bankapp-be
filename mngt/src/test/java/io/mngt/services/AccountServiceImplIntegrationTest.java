@@ -2,10 +2,14 @@ package io.mngt.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.mngt.business.externaltransactions.TransactionXML;
 import io.mngt.dao.StandingOrderDaoImpl;
 import io.mngt.dao.TransactionDao;
 import io.mngt.entity.BalanceILS;
@@ -44,8 +49,9 @@ public class AccountServiceImplIntegrationTest {
     public AccountingService accountingService() {
       return new AccountingServiceImpl();
     }
+
     @Bean
-    public SimpleDateFormat simpleDateFormat(){
+    public SimpleDateFormat simpleDateFormat() {
       return new SimpleDateFormat("yyyy-MM-dd");
     }
   }
@@ -57,14 +63,16 @@ public class AccountServiceImplIntegrationTest {
   @Autowired
   private TransactionDao transactionDao;
   @Autowired
-  private SimpleDateFormat simpleDateFormat;
+  private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");;
   @Autowired
   private EnvironmentRepository environmentRepository;
   @Autowired
   private StandingOrderDaoImpl standingOrderDaoImpl;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Test
-  public void givenHashcode_whenFindBalanceIlsListByHashcode_thenReturnBalanceILSList(){
+  public void givenHashcode_whenFindBalanceIlsListByHashcode_thenReturnBalanceILSList() {
     Credential credential = credentialService.login("maxi", "maio");
     int hashcode = credential.getHashcode();
 
@@ -74,7 +82,7 @@ public class AccountServiceImplIntegrationTest {
   }
 
   @Test
-  public void givenHashcode_whenFindClientByHashcode_thenReturnClient(){
+  public void givenHashcode_whenFindClientByHashcode_thenReturnClient() {
     Credential credential = credentialService.login("maxi", "maio");
     int hashcode = credential.getHashcode();
     Client client = accountingService.findClientByHashcode(hashcode);
@@ -98,7 +106,7 @@ public class AccountServiceImplIntegrationTest {
   }
 
   @Test
-  public void givenTransfer_whenSetTransaction_thenReturnTransaction(){
+  public void givenTransfer_whenSetTransaction_thenReturnTransaction() {
     Transfer data = new Transfer();
     Credential credential = credentialService.login("maxi", "maio");
     data.setHashcode(Integer.toString(credential.getHashcode()));
@@ -111,13 +119,13 @@ public class AccountServiceImplIntegrationTest {
 
   @Transactional
   @Test
-  public void givenClient_Amount_Description_whenCreditAccount_thenReturnBalanceIls(){
+  public void givenClient_Amount_Description_whenCreditAccount_thenReturnBalanceIls() {
     Credential credential = credentialService.login("maxi", "maio");
     Client client = credentialService.findCredentialByHashcode(credential.getHashcode()).getClient();
     int amount = 100;
     String description = "Credit Account Integration Test";
     BalanceILS LastBalance = accountingService.findLastBalanceByClient(client);
-    
+
     BalanceILS balance = accountingService.creditAccount(client, amount, description);
     assertThat(balance.getBalance()).isEqualTo(LastBalance.getBalance() + amount);
   }
@@ -136,7 +144,7 @@ public class AccountServiceImplIntegrationTest {
   }
 
   @Test
-  public void givenValidTransfer_whenIsTransferPossible_thenReturnTrue(){
+  public void givenValidTransfer_whenIsTransferPossible_thenReturnTrue() {
     Transfer data = new Transfer();
     Credential credential = credentialService.login("maxi", "maio");
     data.setHashcode(Integer.toString(credential.getHashcode()));
@@ -158,7 +166,7 @@ public class AccountServiceImplIntegrationTest {
   }
 
   @Test
-  public void givenExistentBankAccount_whenFindClientByBankAccount_thenReturnClient(){
+  public void givenExistentBankAccount_whenFindClientByBankAccount_thenReturnClient() {
     int bankAccount = 100200;
     Client client = accountingService.findClientByBankAccount(bankAccount);
     assertThat(client).isNotNull();
@@ -174,7 +182,7 @@ public class AccountServiceImplIntegrationTest {
   @Rollback
   @Transactional
   @Test
-  public void whenDoTransaction_thenUpdateTransaction(){
+  public void whenDoTransaction_thenUpdateTransaction() {
     Transfer data = new Transfer();
     Credential credential = credentialService.login("maxi", "maio");
     data.setHashcode(Integer.toString(credential.getHashcode()));
@@ -209,7 +217,7 @@ public class AccountServiceImplIntegrationTest {
     accountingService.doTransaction();
     BalanceILS balanceAfterTransaction = accountingService.findLastBalanceByClient(credential.getClient());
     assertThat(balanceAfterTransaction.getBalance())
-      .isEqualTo(balanceBeforeTransaction.getBalance() - data.getAmount() - bankCommission);
+        .isEqualTo(balanceBeforeTransaction.getBalance() - data.getAmount() - bankCommission);
   }
 
   @Rollback
@@ -254,20 +262,32 @@ public class AccountServiceImplIntegrationTest {
     accountingService.setTransaction(data);
     accountingService.doTransaction();
     BalanceILS balanceAfterTransaction = accountingService.findLastBalanceByClient(bankCreditAccount);
-    assertThat(balanceAfterTransaction.getBalance())
-        .isEqualTo(balanceBeforeTransaction.getBalance() + bankCommission );
+    assertThat(balanceAfterTransaction.getBalance()).isEqualTo(balanceBeforeTransaction.getBalance() + bankCommission);
   }
 
   @Transactional
   @Test
-  public void whenGetOutgoingTransactions_thenReturnTransactionList(){
+  public void whenGetOutgoingTransactions_thenReturnXMLString() throws JsonProcessingException, Exception {
+    int OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());
+    Date today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
     Transaction transaction = new Transaction();
     transaction.setId(1L);
+    transaction.setAmount(100);
+    transaction.setDebitAccount(OUTGOING_BANK_ACCOUNT);
+    transaction.setDate(today);
     transaction.setAccountExternal(true);
     transactionDao.save(transaction);
     
-    List<Transaction> list = accountingService.getOutgoingTransactions();
-    assertThat(list).hasSize(1); 
+    transaction.setId(2L);
+    transaction.setAmount(200);
+    transaction.setDebitAccount(OUTGOING_BANK_ACCOUNT);
+    transaction.setDate(today);
+    transaction.setAccountExternal(true);
+    transactionDao.save(transaction);
+
+    String xml = accountingService.getOutgoingTransactions();
+    TransactionXML transactionXML = objectMapper.readValue(xml, TransactionXML.class);
+    assertThat(transactionXML.getTransactionQty()).isEqualTo(2);
   }
 
   @Rollback

@@ -1,5 +1,6 @@
 package io.mngt.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,11 +24,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
+import io.mngt.business.externaltransactions.TransactionXML;
 import io.mngt.dao.BankAccountDao;
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.BankAccount;
@@ -174,6 +178,7 @@ public class AccountingControllerIntegrationTest {
 
   }
 
+  @Rollback
   @Test
   public void givenTransferData_whenSetTransaction_thenTransactionObjectReturned() throws Exception {
     Credential maxiCredential = credentialService.login("maxi", "maio");
@@ -195,6 +200,7 @@ public class AccountingControllerIntegrationTest {
       .andExpect(jsonPath("$.status", is(0)));
   }
 
+  @Rollback
   @Test
   public void givenStandingOrder_whenSetStandingOrder_thenStandingOrderObjectReturned() throws Exception {
     Credential maxiCredential = credentialService.login("maxi", "maio");
@@ -217,5 +223,30 @@ public class AccountingControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status", is(0)));
   }
+
+  @Transactional
+  @Test
+  public void whenGetOutgoingTransactionList_thenReturnXMLfile() throws Exception {
+    
+    MvcResult mvcResult = this.mockMvc.perform(get("/outgoingTransactionsXMLFile"))
+      .andExpect(status().isOk())
+      .andReturn();
+    TransactionXML transactionXML = objectMapper.readValue(
+      mvcResult.getResponse().getContentAsString(), TransactionXML.class);
+    assertThat(transactionXML.getTransactionQty()).isEqualTo(0);
+
+  }
   
+  @Transactional
+  @Test
+  public void whenGetOutgoingTransactionList_thenReturnJSONfile() throws Exception {
+
+    this.mockMvc.perform(get("/outgoingTransactionsJSONFile"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.transactionQty", is(0)));
+    
+
+  }
+
+
 }

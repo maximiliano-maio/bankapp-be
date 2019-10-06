@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import org.springframework.data.annotation.Persistent;
 

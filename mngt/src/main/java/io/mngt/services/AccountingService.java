@@ -2,6 +2,8 @@ package io.mngt.services;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.Client;
 import io.mngt.entity.StandingOrder;
@@ -22,7 +24,7 @@ public interface AccountingService {
 
   void doTransaction();
   void doStandingOrder();
-  List<Transaction> getOutgoingTransactions();
+  String getOutgoingTransactions() throws JsonProcessingException;
   StandingOrder setStandingOrder(StandingOrder data, String hashcode);
   void setNextStandingOrder();
   BalanceILS debitAccount(Client client, int amount, String description);
