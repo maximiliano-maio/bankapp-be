@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-BankMngtApplication<corebankapp>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "mainClass": "io.mngt.BankMngtApplication",
+      "projectName": "corebankapp",
+      "args": ""
+    }
+  ]
+}

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.mngt</groupId>
-	<artifactId>spring-boot</artifactId>
+	<artifactId>core-banking-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mngt</name>
 	<description>Bank Management Spring Boot</description>
