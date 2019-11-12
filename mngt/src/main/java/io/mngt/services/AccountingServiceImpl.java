@@ -49,6 +49,11 @@ public class AccountingServiceImpl implements AccountingService {
     public TransactionXML transactionXML() {
       return new TransactionXML();
     }
+
+    @Bean
+    public Transaction transaction(){
+      return new Transaction();
+    }
   }
   
   @Autowired
@@ -253,6 +258,12 @@ public class AccountingServiceImpl implements AccountingService {
     return xml;
   }
 
+  @Override
+  public List<Transaction> getOutgoingTransactionsList() {
+    List<Transaction> list = transactionDao.findTransactionByExternalAccount(true);
+
+    return list;
+  }
 
 
   @Override

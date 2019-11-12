@@ -25,6 +25,7 @@ public interface AccountingService {
   void doTransaction();
   void doStandingOrder();
   String getOutgoingTransactions() throws JsonProcessingException;
+  List<Transaction> getOutgoingTransactionsList();
   StandingOrder setStandingOrder(StandingOrder data, String hashcode);
   void setNextStandingOrder();
   BalanceILS debitAccount(Client client, int amount, String description);

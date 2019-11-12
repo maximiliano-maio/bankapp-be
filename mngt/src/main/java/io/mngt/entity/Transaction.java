@@ -6,16 +6,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.transaction.Transactional;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
+@Transactional
 @Data
 @Entity
-@Component
 public class Transaction {
 
   @Id

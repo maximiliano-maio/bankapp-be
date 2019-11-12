@@ -1,5 +1,7 @@
 package io.mngt.services;
 
+import javax.jws.WebMethod;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ public class ClientServiceImpl implements ClientService {
     private ContactInfoDao contactInfoDao;
 
     @Override
+    @WebMethod
     @Transactional
     public Client setClient(Client client) {
         return clientDao.save(client);
@@ -36,6 +39,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @WebMethod
     public Client findByClientId(String clientId) {
         Client client = clientDao.findByClientId(clientId);
         if (client == null) return null;

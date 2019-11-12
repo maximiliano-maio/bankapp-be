@@ -9,12 +9,12 @@ import io.mngt.entity.Transaction;
 import lombok.Data;
 
 @Data
-@JacksonXmlRootElement(localName = "transactions")
+// @JacksonXmlRootElement(localName = "transactions")
 public class TransactionXML {
 
   private String date;
   private String fileName;
-  @JacksonXmlElementWrapper(useWrapping = true, localName = "operations")
+  // @JacksonXmlElementWrapper(useWrapping = true, localName = "operations")
   private List<Transaction> item;
   private int transactionQty;
   private long transactionTotalAmount;
