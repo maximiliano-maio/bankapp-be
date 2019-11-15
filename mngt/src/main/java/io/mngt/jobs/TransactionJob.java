@@ -27,14 +27,15 @@ public class TransactionJob {
     log.info("Transaction batch job has finished");
   }
 
-  @Scheduled(cron = "0 0/40 * 1/1 * ?")
+  // SOAP WS implemented to transfer transaction's information
+  // @Scheduled(cron = "0 0/40 * 1/1 * ?")
   public void buildOutgoingTransactionFile() throws JsonProcessingException {
     log.info("Building Outgoing transaction file...");
     accountingService.getOutgoingTransactions();
     log.info("Outgoing transaction's finished...");
   }
 
-  @Scheduled(cron = "0 0/1 * 1/1 * ?")
+  @Scheduled(cron = "0 0/15 * 1/1 * ?")
   public void executeStandingOrders(){
     log.info("Standing orders job is running...");
     accountingService.doStandingOrder();

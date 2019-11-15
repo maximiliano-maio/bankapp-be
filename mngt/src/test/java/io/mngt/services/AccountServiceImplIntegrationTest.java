@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -288,6 +289,14 @@ public class AccountServiceImplIntegrationTest {
     String xml = accountingService.getOutgoingTransactions();
     TransactionXML transactionXML = objectMapper.readValue(xml, TransactionXML.class);
     assertThat(transactionXML.getTransactionQty()).isEqualTo(2);
+  }
+
+  @Test
+  public void whenGetOutgoingTransactionList_thenListSize2Returned(){
+    List<Transaction> list = new ArrayList<>();
+    list = accountingService.getOutgoingTransactionsList();
+    assertThat(list.size()).isEqualTo(2);
+
   }
 
   @Rollback

@@ -26,7 +26,7 @@
       <xs:element name="debitAccount" type="xs:int" />
       <xs:element name="creditAccount" type="xs:int" />
       <xs:element name="amount" type="xs:int" />
-      <xs:element name="date" type="xs:date" />
+      <xs:element name="dateTime" type="xs:date" />
     </xs:sequence>
   </xs:complexType>
 

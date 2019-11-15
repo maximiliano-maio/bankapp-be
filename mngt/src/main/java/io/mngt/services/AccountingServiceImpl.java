@@ -70,7 +70,7 @@ public class AccountingServiceImpl implements AccountingService {
   private EnvironmentRepository environmentRepository;
   @Autowired
   private Transaction transaction;
-  @Autowired
+  
   private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
   @Autowired
   private ObjectMapper objectMapper;
@@ -260,9 +260,7 @@ public class AccountingServiceImpl implements AccountingService {
 
   @Override
   public List<Transaction> getOutgoingTransactionsList() {
-    List<Transaction> list = transactionDao.findTransactionByExternalAccount(true);
-
-    return list;
+    return transactionDao.findTransactionByExternalAccount(true);
   }
 
 

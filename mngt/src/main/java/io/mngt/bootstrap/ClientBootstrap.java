@@ -1,5 +1,6 @@
 package io.mngt.bootstrap;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,12 +21,14 @@ import io.mngt.entity.Client;
 import io.mngt.entity.ContactInfo;
 import io.mngt.entity.Credential;
 import io.mngt.entity.Loan;
+import io.mngt.entity.Transaction;
 import io.mngt.repositories.BalanceILSRepository;
 import io.mngt.repositories.BankAccountRepository;
 import io.mngt.repositories.CheckBookOrderRepository;
 import io.mngt.repositories.ClientRepository;
 import io.mngt.repositories.CredentialRepository;
 import io.mngt.repositories.LoanRepository;
+import io.mngt.repositories.TransactionRepository;
 
 @Component
 @Profile("default")
@@ -45,11 +48,41 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   private CredentialRepository credentialRepository;
   @Autowired
   private BankAccountRepository bankAccountRepository;
+  @Autowired
+  private TransactionRepository transactionRepository;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     // Population for testing purpose:
     initSetClientData();
+    initSetTransactionData();
+  }
+
+  private void initSetTransactionData() {
+    LocalDate localDate = LocalDate.of(2019, 7, 10);
+    Date date = java.sql.Date.valueOf(localDate);
+    
+    Transaction transaction = new Transaction();
+    transaction.setDebitAccount(100100);
+    transaction.setCreditAccount(200100);
+    transaction.setDate(date);
+    transaction.setStatus(1);
+    transaction.setAmount(100);
+    transaction.setAccountExternal(true);
+
+    transactionRepository.save(transaction);
+
+    localDate = LocalDate.of(2019, 6, 5);
+    date = java.sql.Date.valueOf(localDate);
+    transaction = new Transaction();
+    transaction.setDebitAccount(200100);
+    transaction.setCreditAccount(100100);
+    transaction.setDate(date);
+    transaction.setStatus(1);
+    transaction.setAmount(500);
+    transaction.setAccountExternal(true);
+
+    transactionRepository.save(transaction);
   }
 
   private void initSetClientData() {
