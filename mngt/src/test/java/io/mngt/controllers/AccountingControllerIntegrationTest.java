@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.xml.transform.Source;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.xml.transform.StringSource;
 
 import io.mngt.business.externaltransactions.TransactionXML;
 import io.mngt.dao.BankAccountDao;
@@ -247,6 +250,8 @@ public class AccountingControllerIntegrationTest {
     
 
   }
+
+  
 
 
 }

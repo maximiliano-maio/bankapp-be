@@ -2,7 +2,6 @@ package io.mngt.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
