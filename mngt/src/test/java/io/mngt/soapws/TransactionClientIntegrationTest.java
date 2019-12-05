@@ -18,6 +18,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import io.mngt.services.transactions.GetTransactionsRequest;
+import io.mngt.services.transactions.GetTransactionsResponse;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(locations = "classpath:application-integrationtest.properties")
@@ -43,5 +44,18 @@ public class TransactionClientIntegrationTest extends WebServiceGatewaySupport {
 
     assertThat(ws.marshalSendAndReceive("http://localhost:" + port + "/ws", request)).isNotNull();
     
+  }
+
+  @Test
+  public void givenTransactionResquest_whenGetTransaction_thenDebitAccount100100Returned() throws IOException {
+    WebServiceTemplate ws = new WebServiceTemplate(marshaller);
+    GetTransactionsRequest request = new GetTransactionsRequest();
+    request.setName("novalue");
+
+    GetTransactionsResponse response =  new GetTransactionsResponse();
+
+    response = (GetTransactionsResponse) ws.marshalSendAndReceive("http://localhost:" + port + "/ws", request);
+    assertThat(response.getTransaction().get(0).getDebitAccount()).isEqualTo(100100);
+
   }
 }

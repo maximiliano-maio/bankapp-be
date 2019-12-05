@@ -20,9 +20,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import lombok.Data;
-
-@Data
 @Entity
 public class Client implements Serializable {
 	
@@ -87,6 +84,112 @@ public class Client implements Serializable {
 		this.lastName = lastname;
 		this.maritalStatus = maritalStatus;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public int getValidationCode() {
+		return validationCode;
+	}
+
+	public void setValidationCode(int validationCode) {
+		this.validationCode = validationCode;
+	}
+
+	public List<BalanceILS> getBalance() {
+		return balance;
+	}
+
+	public void setBalance(List<BalanceILS> balance) {
+		this.balance = balance;
+	}
+
+	public Set<BankAccount> getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(Set<BankAccount> bankAccount) {
+		this.bankAccount = bankAccount;
+	}
+
+	public ContactInfo getContactInfo() {
+		return contactInfo;
+	}
+
+	public void setContactInfo(ContactInfo contactInfo) {
+		this.contactInfo = contactInfo;
+	}
+
+	public List<Loan> getLoan() {
+		return loan;
+	}
+
+	public void setLoan(List<Loan> loan) {
+		this.loan = loan;
+	}
+
+	public Credential getCredential() {
+		return credential;
+	}
+
+	public void setCredential(Credential credential) {
+		this.credential = credential;
+	}
+
+	public Set<CheckBookOrder> getCheckBookOrder() {
+		return checkBookOrder;
+	}
+
+	public void setCheckBookOrder(Set<CheckBookOrder> checkBookOrder) {
+		this.checkBookOrder = checkBookOrder;
+	}
+
+	public List<ClientOperationsLog> getLog() {
+		return log;
+	}
+
+	public void setLog(List<ClientOperationsLog> log) {
+		this.log = log;
+	}
+
+	
 
 	
 }

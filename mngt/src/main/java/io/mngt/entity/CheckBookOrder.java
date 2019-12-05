@@ -10,9 +10,6 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.Data;
-
-@Data
 @Entity
 public class CheckBookOrder {
 
@@ -44,5 +41,70 @@ public class CheckBookOrder {
         this.currency = currency;
     }
 
+    public int getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(int orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCheckType() {
+        return checkType;
+    }
+
+    public void setCheckType(String checkType) {
+        this.checkType = checkType;
+    }
+
+    public int getFirstCheck() {
+        return firstCheck;
+    }
+
+    public void setFirstCheck(int firstCheck) {
+        this.firstCheck = firstCheck;
+    }
+
+    public int getLastCheck() {
+        return lastCheck;
+    }
+
+    public void setLastCheck(int lastCheck) {
+        this.lastCheck = lastCheck;
+    }
+
+    public int getCheckAmount() {
+        return checkAmount;
+    }
+
+    public void setCheckAmount(int checkAmount) {
+        this.checkAmount = checkAmount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    
     
 }

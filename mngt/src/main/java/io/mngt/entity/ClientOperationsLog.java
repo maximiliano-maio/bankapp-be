@@ -32,5 +32,55 @@ public class ClientOperationsLog {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "client_id")
   private Client client;
+
+  public Integer getOperationCode() {
+    return operationCode;
+  }
+
+  public void setOperationCode(Integer operationCode) {
+    this.operationCode = operationCode;
+  }
+
+  public String getOperationDescription() {
+    return operationDescription;
+  }
+
+  public void setOperationDescription(String operationDescription) {
+    this.operationDescription = operationDescription;
+  }
+
+  public Integer getErrorCode() {
+    return ErrorCode;
+  }
+
+  public void setErrorCode(Integer errorCode) {
+    ErrorCode = errorCode;
+  }
+
+  public String getErrorDescription() {
+    return errorDescription;
+  }
+
+  public void setErrorDescription(String errorDescription) {
+    this.errorDescription = errorDescription;
+  }
+
+  public LocalDateTime getDate() {
+    return date;
+  }
+
+  public void setDate(LocalDateTime date) {
+    this.date = date;
+  }
+
+  public Client getClient() {
+    return client;
+  }
+
+  public void setClient(Client client) {
+    this.client = client;
+  }
+
+  
   
 }

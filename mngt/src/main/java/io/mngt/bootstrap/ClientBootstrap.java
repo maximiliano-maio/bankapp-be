@@ -1,9 +1,15 @@
 package io.mngt.bootstrap;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,6 +20,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import io.mngt.dao.TransactionDao;
 import io.mngt.entity.BalanceILS;
 import io.mngt.entity.BankAccount;
 import io.mngt.entity.CheckBookOrder;
@@ -50,12 +57,43 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   private BankAccountRepository bankAccountRepository;
   @Autowired
   private TransactionRepository transactionRepository;
+  @Autowired
+  private TransactionDao transactionDao;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     // Population for testing purpose:
     initSetClientData();
     initSetTransactionData();
+
+    // Write population to files:
+    try {
+      initSetTransactionDataToTXT();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
+
+  private void initSetTransactionDataToTXT() throws IOException {
+    String path = "/home/max/Documents/projects/corebankapp/mngt/src/main/resources/files/transaction.txt";
+    File file = new File(path);
+    file.createNewFile();
+    FileOutputStream fos = new FileOutputStream(file);
+    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fos));
+    
+    List<Transaction> list = transactionDao.findTransactionByStatus(1);
+    
+    bufferedWriter.write("id, debitAccount, creditAccount, amount, date");
+    bufferedWriter.newLine();
+    
+    for(Transaction t : list) {
+      bufferedWriter.write(t.toString());
+      bufferedWriter.newLine();
+    }
+    bufferedWriter.flush();
+    bufferedWriter.close();
   }
 
   private void initSetTransactionData() {

@@ -1,5 +1,7 @@
 package io.mngt.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,12 +20,12 @@ import io.mngt.entity.Credential;
 import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @CrossOrigin("*")
 @RestController
 public class ClientController {
+
+    final static Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     @Autowired
     private ClientService clientService;
@@ -33,7 +35,7 @@ public class ClientController {
     @PostMapping
     @RequestMapping({ "/registerclient" })    
     public Client create(@RequestBody Client client) {
-        log.info("Client registration..");
+        logger.info("Client registration..");
         return clientService.setClient(client);
     }
 
@@ -50,7 +52,7 @@ public class ClientController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public void handleNotFound(Exception e) {
-        log.info("Not found exception, " + e.getMessage());
+        logger.info("Not found exception, " + e.getMessage());
     }
     
 

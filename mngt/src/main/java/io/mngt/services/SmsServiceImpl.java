@@ -8,15 +8,17 @@ import com.nexmo.client.sms.SmsSubmissionResponse;
 import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 public class SmsServiceImpl implements SmsService {
 
+  @Autowired
+  private Logger logger;
 
   @Value("${nexmo.creds.api-key}")
   String nexmoApiKey;
@@ -29,7 +31,7 @@ public class SmsServiceImpl implements SmsService {
     NexmoClient client = new NexmoClient.Builder().apiKey(nexmoApiKey).apiSecret(nexmoSecret).build();
     SmsSubmissionResponse response = client.getSmsClient().submitMessage(message); 
     for (SmsSubmissionResponseMessage responseMessage : response.getMessages()) {
-      log.info("SMS Service: " + responseMessage.toString());
+      logger.info("SMS Service: " + responseMessage.toString());
     }  
     return response;
   }
@@ -44,7 +46,7 @@ public class SmsServiceImpl implements SmsService {
     
     SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
     for (SmsSubmissionResponseMessage responseMessage : response.getMessages()) {
-      log.info("SMS Service: " + responseMessage.toString());
+      logger.info("SMS Service: " + responseMessage.toString());
     }
     return response;
   }
@@ -55,7 +57,7 @@ public class SmsServiceImpl implements SmsService {
     TextMessage message = new TextMessage("Nexmo", "972515819763", "Hello from Nexmo");
     SmsSubmissionResponse response = client.getSmsClient().submitMessage(message);
     for (SmsSubmissionResponseMessage responseMessage : response.getMessages()) {
-      log.info("SMS Service: " + responseMessage.toString());
+      logger.info("SMS Service: " + responseMessage.toString());
     }
     return response;
   }

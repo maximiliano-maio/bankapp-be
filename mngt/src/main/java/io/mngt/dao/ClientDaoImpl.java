@@ -6,15 +6,14 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.mngt.entity.Client;
 import io.mngt.repositories.ClientRepository;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Repository
 public class ClientDaoImpl implements ClientDao {
 
@@ -30,10 +29,13 @@ public class ClientDaoImpl implements ClientDao {
   @Autowired
   private ClientOperationsLogDao clientOperationsLogDao;
 
+  @Autowired
+  private Logger logger;
+
   @Override
   public Client findByClientId(String clientId) {
     Optional<Client> c = clientRepository.findByClientId(clientId);
-    if (c.isPresent()) 
+    if (c.isPresent())
       return c.get();
 
     return null;
@@ -41,7 +43,8 @@ public class ClientDaoImpl implements ClientDao {
 
   @Override
   public Client save(Client client) {
-    if (findByClientId(client.getClientId()) != null) return null;
+    if (findByClientId(client.getClientId()) != null)
+      return null;
     return clientRepository.save(client);
   }
 
@@ -56,23 +59,21 @@ public class ClientDaoImpl implements ClientDao {
 
   @Override
   public Client findClientAndCredentialAssociatedByClientId(String clientId) {
-    List<Client> clientList = em.createQuery(FIND_CLIENT_BY_CLIENT_ID, Client.class)
-      .setParameter("clientId", clientId)
-      .getResultList();
-    
-      if (clientList.size() > 0) return clientList.get(0);
+    List<Client> clientList = em.createQuery(FIND_CLIENT_BY_CLIENT_ID, Client.class).setParameter("clientId", clientId)
+        .getResultList();
 
-      return null;
+    if (clientList.size() > 0)
+      return clientList.get(0);
+
+    return null;
   }
 
   @Override
   @Transactional
   public void updateValidationCode(Client client, int validationCode) {
-    int updatedRows = em.createQuery(UPDATE_VALIDATION_CODE)
-      .setParameter("validationCode", validationCode)
-      .setParameter("clientId", client.getClientId())
-      .executeUpdate();
-    log.info("Updated rows on Update Validation Code: " + updatedRows);
+    int updatedRows = em.createQuery(UPDATE_VALIDATION_CODE).setParameter("validationCode", validationCode)
+        .setParameter("clientId", client.getClientId()).executeUpdate();
+    logger.info("Updated rows on Update Validation Code: " + updatedRows);
 
   }
 

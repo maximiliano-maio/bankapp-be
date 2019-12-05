@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,13 +28,13 @@ import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.AccountingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @CrossOrigin("*")
 @RestController
 @Api(value = "Accounting", description = "Data service operations on accounting", tags = ("accounting, balance, standing order, transaction"))
 public class AccountingController {
+
+  final static Logger logger = LoggerFactory.getLogger(AccountingController.class);
 
   @Autowired
   private AccountingService accountingService;
@@ -87,7 +89,7 @@ public class AccountingController {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(NotFoundException.class)
   public void handleNotFound(Exception e) {
-    log.info("Not found exception, " + e.getMessage());
+    logger.info("Not found exception, " + e.getMessage());
   }
   
 }

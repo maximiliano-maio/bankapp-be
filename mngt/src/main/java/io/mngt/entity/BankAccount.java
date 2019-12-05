@@ -11,9 +11,6 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.Data;
-
-@Data
 @Entity
 public class BankAccount {
 
@@ -38,4 +35,29 @@ public class BankAccount {
     this.status = status;
   }
 
+  public Client getClient() {
+    return client;
+  }
+
+  public void setClient(Client client) {
+    this.client = client;
+  }
+
+  public int getBankAccountNumber() {
+    return bankAccountNumber;
+  }
+
+  public void setBankAccountNumber(int bankAccountNumber) {
+    this.bankAccountNumber = bankAccountNumber;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  
 }

@@ -1,0 +1,52 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://mngt.io/services/transactions" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://mngt.io/services/transactions" targetNamespace="http://mngt.io/services/transactions">
+<wsdl:types>
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://mngt.io/services/transactions">
+    <xs:element name="getTransactionsRequest">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="getTransactionsResponse">
+      <xs:complexType>
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+          <xs:element name="transaction" type="tns:outgoingTransaction" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+    <xs:complexType name="outgoingTransaction">
+      <xs:sequence>
+        <xs:element name="debitAccount" type="xs:int" />
+        <xs:element name="creditAccount" type="xs:int" />
+        <xs:element name="amount" type="xs:int" />
+        <xs:element name="dateTime" type="xs:date" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:schema>
+</wsdl:types><wsdl:message name="getTransactionsResponse">
+  <wsdl:part element="tns:getTransactionsResponse" name="getTransactionsResponse"></wsdl:part>
+</wsdl:message><wsdl:message name="getTransactionsRequest">
+  <wsdl:part element="tns:getTransactionsRequest" name="getTransactionsRequest"></wsdl:part>
+</wsdl:message><wsdl:portType name="TransactionsPort">
+  <wsdl:operation name="getTransactions">
+    <wsdl:input message="tns:getTransactionsRequest" name="getTransactionsRequest"></wsdl:input>
+    <wsdl:output message="tns:getTransactionsResponse" name="getTransactionsResponse"></wsdl:output>
+  </wsdl:operation>
+</wsdl:portType><wsdl:binding name="TransactionsPortSoap11" type="tns:TransactionsPort">
+  <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+  <wsdl:operation name="getTransactions">
+    <soap:operation soapAction="" />
+    <wsdl:input name="getTransactionsRequest">
+      <soap:body use="literal" />
+    </wsdl:input>
+    <wsdl:output name="getTransactionsResponse">
+      <soap:body use="literal" />
+    </wsdl:output>
+  </wsdl:operation>
+</wsdl:binding><wsdl:service name="TransactionsPortService">
+  <wsdl:port binding="tns:TransactionsPortSoap11" name="TransactionsPortSoap11">
+    <soap:address location="http://localhost:8100/ws" />
+  </wsdl:port>
+</wsdl:service>
+</wsdl:definitions>

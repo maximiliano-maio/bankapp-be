@@ -12,9 +12,7 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.Data;
 
-@Data
 @Entity
 public class Loan implements Serializable {
   
@@ -43,5 +41,47 @@ public class Loan implements Serializable {
     this.quota = quota;
     this.interest = interest;
   }
+
+  public Client getClient() {
+    return client;
+  }
+
+  public void setClient(Client client) {
+    this.client = client;
+  }
+
+  public String getLoanType() {
+    return loanType;
+  }
+
+  public void setLoanType(String loanType) {
+    this.loanType = loanType;
+  }
+
+  public int getSum() {
+    return sum;
+  }
+
+  public void setSum(int sum) {
+    this.sum = sum;
+  }
+
+  public int getQuota() {
+    return quota;
+  }
+
+  public void setQuota(int quota) {
+    this.quota = quota;
+  }
+
+  public Float getInterest() {
+    return interest;
+  }
+
+  public void setInterest(Float interest) {
+    this.interest = interest;
+  }
+
+  
   
 }

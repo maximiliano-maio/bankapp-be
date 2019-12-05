@@ -14,9 +14,7 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.Data;
 
-@Data
 @Entity
 public class StandingOrder {
   
@@ -38,6 +36,64 @@ public class StandingOrder {
   private int status;
   // @Deprecated:  When setting new Standing Order from client-side, a hashcode value is passed to search Client
   // private String hashcode;
+  public Client getClient() {
+    return client;
+  }
 
+  public void setClient(Client client) {
+    this.client = client;
+  }
+
+  public int getAmount() {
+    return amount;
+  }
+
+  public void setAmount(int amount) {
+    this.amount = amount;
+  }
+
+  public String getCompanyName() {
+    return companyName;
+  }
+
+  public void setCompanyName(String companyName) {
+    this.companyName = companyName;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public StandingOrderFrecuency getFrecuency() {
+    return frecuency;
+  }
+
+  public void setFrecuency(StandingOrderFrecuency frecuency) {
+    this.frecuency = frecuency;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
+  public void setStatus(int status) {
+    this.status = status;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  
+
+  
   
 }

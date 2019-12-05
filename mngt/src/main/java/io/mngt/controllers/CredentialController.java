@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.nexmo.client.NexmoClientException;
 import com.nexmo.client.sms.SmsSubmissionResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,12 +27,12 @@ import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;
 import io.mngt.services.SmsService;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @CrossOrigin("*")
 @RestController
 public class CredentialController {
+
+  final static Logger logger = LoggerFactory.getLogger(CredentialController.class);
 
   @Autowired
   private CredentialService credentialService;
@@ -100,7 +102,7 @@ public class CredentialController {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(NotFoundException.class)
   public void handleNotFound(Exception e) {
-    log.info("Not found exception, " + e.getMessage());
+    logger.info("Not found exception, " + e.getMessage());
   }
 
   

@@ -9,6 +9,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +29,7 @@ import io.mngt.entity.StandingOrder;
 import io.mngt.entity.Transaction;
 import io.mngt.entity.Transfer;
 import io.mngt.repositories.EnvironmentRepository;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 public class AccountingServiceImpl implements AccountingService {
 
@@ -70,6 +69,8 @@ public class AccountingServiceImpl implements AccountingService {
   private EnvironmentRepository environmentRepository;
   @Autowired
   private Transaction transaction;
+  @Autowired
+  private Logger logger;
   
   private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
   @Autowired
@@ -299,7 +300,7 @@ public class AccountingServiceImpl implements AccountingService {
     Client bankAccount = findClientByBankAccount(INCOMING_BANK_ACCOUNT);
 
     for (StandingOrder so : standingOrderList) {
-      log.info("Id: " + so.getId() + ". Date: " + so.getDate());
+      logger.info("Id: " + so.getId() + ". Date: " + so.getDate());
 
       debitAccount(so.getClient(), so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());
       creditAccount(bankAccount, so.getAmount(), "תשלום הוראת קבע בחברה:" + so.getCompanyName());

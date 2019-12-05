@@ -3,6 +3,7 @@ package io.mngt.services;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +12,7 @@ import io.mngt.dao.ClientDao;
 import io.mngt.dao.CredentialDao;
 import io.mngt.entity.Client;
 import io.mngt.entity.Credential;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 public class CredentialServiceImpl implements CredentialService {
 
@@ -29,6 +28,9 @@ public class CredentialServiceImpl implements CredentialService {
   @Autowired
   private ValidationCodeGenerator validationCodeGenerator;
 
+  @Autowired
+  private Logger logger;
+  
   @Override
   public Credential login(String username, String password) {
     
@@ -36,7 +38,7 @@ public class CredentialServiceImpl implements CredentialService {
     if (credentialFromDB == null) return null;
 
     if (password.equals(credentialFromDB.getPassword())) {
-      log.info("Credentials are correct");
+      logger.info("Credentials are correct");
       
       // Generate HashCode from username, password and date:
       this.date = new Date(System.currentTimeMillis());
@@ -56,7 +58,7 @@ public class CredentialServiceImpl implements CredentialService {
 
       return returnedCredential;
     } else {
-      log.info("Username and Password are not correct");
+      logger.info("Username and Password are not correct");
       return null;
     }
   }

@@ -2,14 +2,9 @@ package io.mngt.business.externaltransactions;
 
 import java.util.List;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
 import io.mngt.entity.Transaction;
-import lombok.Data;
 
-@Data
-// @JacksonXmlRootElement(localName = "transactions")
+
 public class TransactionXML {
 
   private String date;
@@ -22,6 +17,48 @@ public class TransactionXML {
   public void setList(List<Transaction> list) {
     this.item = list;
   }
+
+  public String getDate() {
+    return date;
+  }
+
+  public void setDate(String date) {
+    this.date = date;
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
+  public List<Transaction> getItem() {
+    return item;
+  }
+
+  public void setItem(List<Transaction> item) {
+    this.item = item;
+  }
+
+  public int getTransactionQty() {
+    return transactionQty;
+  }
+
+  public void setTransactionQty(int transactionQty) {
+    this.transactionQty = transactionQty;
+  }
+
+  public long getTransactionTotalAmount() {
+    return transactionTotalAmount;
+  }
+
+  public void setTransactionTotalAmount(long transactionTotalAmount) {
+    this.transactionTotalAmount = transactionTotalAmount;
+  }
+
+  
 
     
 }
