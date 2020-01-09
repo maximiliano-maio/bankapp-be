@@ -11,7 +11,7 @@ import com.rabbitmq.client.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class Runner implements CommandLineRunner {
 
     private ConnectionFactory factory = new ConnectionFactory();

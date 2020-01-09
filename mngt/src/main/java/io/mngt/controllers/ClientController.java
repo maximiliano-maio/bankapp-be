@@ -25,7 +25,7 @@ import io.mngt.services.CredentialService;
 @RestController
 public class ClientController {
 
-    final static Logger logger = LoggerFactory.getLogger(ClientController.class);
+    private final static Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     @Autowired
     private ClientService clientService;

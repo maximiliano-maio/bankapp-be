@@ -32,7 +32,7 @@ import io.mngt.services.SmsService;
 @RestController
 public class CredentialController {
 
-  final static Logger logger = LoggerFactory.getLogger(CredentialController.class);
+  private final static Logger logger = LoggerFactory.getLogger(CredentialController.class);
 
   @Autowired
   private CredentialService credentialService;

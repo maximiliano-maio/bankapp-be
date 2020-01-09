@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +29,7 @@ public class CredentialServiceImpl implements CredentialService {
   @Autowired
   private ValidationCodeGenerator validationCodeGenerator;
 
-  @Autowired
-  private Logger logger;
+  private final static Logger logger = LoggerFactory.getLogger("CredentialServiceImpl.class");;
   
   @Override
   public Credential login(String username, String password) {

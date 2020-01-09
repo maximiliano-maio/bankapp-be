@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +30,7 @@ public class ClientDaoImpl implements ClientDao {
   @Autowired
   private ClientOperationsLogDao clientOperationsLogDao;
 
-  @Autowired
-  private Logger logger;
+  private final static Logger logger = LoggerFactory.getLogger("ClientDaoImpl.class");
 
   @Override
   public Client findByClientId(String clientId) {

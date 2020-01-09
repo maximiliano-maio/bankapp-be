@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,8 +71,7 @@ public class AccountingServiceImpl implements AccountingService {
   private EnvironmentRepository environmentRepository;
   @Autowired
   private Transaction transaction;
-  @Autowired
-  private Logger logger;
+  private final static Logger logger = LoggerFactory.getLogger("AccountingServiceImpl.class");
   
   private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
   @Autowired
@@ -154,7 +155,13 @@ public class AccountingServiceImpl implements AccountingService {
   @Override
   public void doTransaction() {
     List<Transaction> transactionList = transactionDao.findTransactionByStatus(0);
-    int OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());
+    int OUTGOING_BANK_ACCOUNT = 0;
+    try {
+      OUTGOING_BANK_ACCOUNT = Integer.parseInt(environmentRepository.findByKey("OUTGOING_BANK_ACCOUNT").getValue());  
+    } catch (Exception e) {
+      //TODO: handle exception
+    }
+    
     for (Transaction t : transactionList) {
       // ---- Debit ----
       Client clientDebitAccount = findClientByBankAccount(t.getDebitAccount());
@@ -201,7 +208,13 @@ public class AccountingServiceImpl implements AccountingService {
 
     BalanceILS debitBalance = new BalanceILS();
     debitBalance.setClient(client);
-    debitBalance.setBalance(lastBalance.getBalance() - amount);
+    int balance = 0;
+    try {
+      balance = lastBalance.getBalance();
+    } catch (NullPointerException e) {
+      //e.printStackTrace();
+    }
+    debitBalance.setBalance(balance - amount);
     debitBalance.setCredit(0);
     debitBalance.setDate(new Date());
     debitBalance.setDebt(amount);

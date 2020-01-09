@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -77,7 +78,10 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   }
 
   private void initSetTransactionDataToTXT() throws IOException {
-    String path = "/home/max/Documents/projects/corebankapp/mngt/src/main/resources/files/transaction.txt";
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+    String dateToFile = sdf.format(new Date());
+    
+    String path = "/home/max/Documents/projects/corebankapp/mngt/src/main/resources/files/transaction-" + dateToFile + ".txt";
     File file = new File(path);
     file.createNewFile();
     FileOutputStream fos = new FileOutputStream(file);

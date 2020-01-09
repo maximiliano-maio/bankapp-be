@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "Accounting", description = "Data service operations on accounting", tags = ("accounting, balance, standing order, transaction"))
 public class AccountingController {
 
-  final static Logger logger = LoggerFactory.getLogger(AccountingController.class);
+  private final static Logger logger = LoggerFactory.getLogger(AccountingController.class);
 
   @Autowired
   private AccountingService accountingService;

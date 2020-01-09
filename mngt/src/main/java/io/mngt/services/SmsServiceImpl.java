@@ -9,7 +9,7 @@ import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SmsServiceImpl implements SmsService {
 
-  @Autowired
-  private Logger logger;
+  private final static Logger logger = LoggerFactory.getLogger("SmsServiceImpl.class");
 
   @Value("${nexmo.creds.api-key}")
   String nexmoApiKey;
