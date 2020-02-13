@@ -1,5 +1,9 @@
 package io.mngt.dao;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +35,24 @@ public class ClientDaoImpl implements ClientDao {
   private ClientOperationsLogDao clientOperationsLogDao;
 
   private final static Logger logger = LoggerFactory.getLogger("ClientDaoImpl.class");
+  private final static String url = "jdbc:h2:mem:test";
+  private final static String username = "sa";
+  private final static String password = "";
+
+
+  public Object findMetadata(){
+    try {
+      Connection connection = DriverManager.getConnection(url, username, password);
+      DatabaseMetaData metadata = connection.getMetaData();
+      ResultSet resultSet = metadata.getColumns(null, null, "CLIENT", null);
+    } catch (Exception e) {
+      //TODO: handle exception
+    }  
+    
+
+    return null;
+    
+  }
 
   @Override
   public Client findByClientId(String clientId) {
@@ -76,5 +98,6 @@ public class ClientDaoImpl implements ClientDao {
     logger.info("Updated rows on Update Validation Code: " + updatedRows);
 
   }
+
 
 }

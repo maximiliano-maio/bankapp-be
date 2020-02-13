@@ -37,6 +37,8 @@ import io.mngt.repositories.ClientRepository;
 import io.mngt.repositories.CredentialRepository;
 import io.mngt.repositories.LoanRepository;
 import io.mngt.repositories.TransactionRepository;
+import io.mngt.repositories.UserRepository;
+import io.mngt.entity.User;
 
 @Component
 @Profile("default")
@@ -60,13 +62,15 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
   private TransactionRepository transactionRepository;
   @Autowired
   private TransactionDao transactionDao;
+  @Autowired
+  private UserRepository userRepository;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     // Population for testing purpose:
     initSetClientData();
     initSetTransactionData();
-
+    initUsername();
     // Write population to files:
     try {
       initSetTransactionDataToTXT();
@@ -75,6 +79,13 @@ public class ClientBootstrap implements ApplicationListener<ContextRefreshedEven
       e.printStackTrace();
     }
 
+  }
+
+  private void initUsername() {
+    userRepository.save(new User("maxi", "maio", "ADMIN"));
+    userRepository.save(new User("user", "pass", "USER"));
+    userRepository.save(new User("test", "test", "TEST"));
+    userRepository.save(new User("mem", "mem", "ADMIN"));
   }
 
   private void initSetTransactionDataToTXT() throws IOException {

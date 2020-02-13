@@ -31,7 +31,7 @@ public class TransactionJob {
   // Each day at 20 hs (for PROD env.)
   // @Scheduled(cron="0 0 20 1/1 * ?")
 
-  @Scheduled(cron = "0 0/1 * 1/1 * ?")
+  @Scheduled(cron = "0 0 20 1/1 * ?")
   public void executeTransactions() {
     logger.info("Transaction batch job is running...");
     accountingService.doTransaction();

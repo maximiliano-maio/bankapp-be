@@ -1,6 +1,9 @@
 package io.mngt.controllers;
 
 import java.io.IOException;
+import java.security.Principal;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.nexmo.client.NexmoClientException;
 import com.nexmo.client.sms.SmsSubmissionResponse;
@@ -27,6 +30,9 @@ import io.mngt.exceptions.NotFoundException;
 import io.mngt.services.ClientService;
 import io.mngt.services.CredentialService;
 import io.mngt.services.SmsService;
+import org.springframework.web.bind.annotation.RequestMethod;
+import java.util.Base64;
+
 
 @CrossOrigin("*")
 @RestController
@@ -105,5 +111,11 @@ public class CredentialController {
     logger.info("Not found exception, " + e.getMessage());
   }
 
+  @RequestMapping(value="/path", method=RequestMethod.GET)
+  public Principal requestMethodName(HttpServletRequest request) {
+      String authToken = request.getHeader("Authorization").substring("Basic".length()).trim();
+      return () -> new String(Base64.getDecoder().decode(authToken)).split(":")[0];
+  }
+  
   
 }
